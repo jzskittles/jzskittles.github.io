@@ -7,6 +7,9 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development',
 })
 
+const withTM = require('next-transpile-modules')(['three'])
+module.exports = withTM()
+
 const nextConfig = {
   // uncomment the following snippet if using styled components
   // compiler: {
