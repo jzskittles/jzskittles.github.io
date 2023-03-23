@@ -1,0 +1,11 @@
+Model Information:
+* title:	GoDown Final Model
+* source:	https://sketchfab.com/3d-models/godown-final-model-ea159193132e406f84622195c5fbe477
+* author:	Block by Block (https://sketchfab.com/blockbyblock)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "GoDown Final Model" (https://sketchfab.com/3d-models/godown-final-model-ea159193132e406f84622195c5fbe477) by Block by Block (https://sketchfab.com/blockbyblock) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
