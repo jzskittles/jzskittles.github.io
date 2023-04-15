@@ -21,15 +21,18 @@ export default function handler(req, res) {
     const filePath = buildPath()
     const { dialogue } = extractData(filePath)
 
+
     if (req.method === 'GET') {
         res.status(200).json(dialogue)
     } else if (req.method === 'POST') {
+        console.log("req.body", req.body.url, dialogue)
         if (Object.hasOwn(dialogue, req.body.url)) {
             const newComment = {
                 name: req.body.name,
                 description: req.body.description,
                 datetime: req.body.datetime,
             }
+            console.log("has url", req.body.url, newComment)
             if (Object.hasOwn(dialogue[req.body.url], req.body.annotationindex)) {
                 const comments = dialogue[req.body.url][req.body.annotationindex]
 
