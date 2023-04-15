@@ -1,12 +1,5 @@
-import dynamic from 'next/dynamic'
-import ProjectPanel from '@/components/dom/ProjectPanel'
 import { useRouter } from 'next/router'
-import { useEffect, useState, useRef } from 'react'
-// Dynamic import is used to prevent a payload when the website starts, that includes threejs, r3f etc..
-// WARNING ! errors might get obfuscated by using dynamic import.
-// If something goes wrong go back to a static import to show the error.
-// https://github.com/pmndrs/react-three-next/issues/49
-const Logo = dynamic(() => import('@/components/canvas/Logo'), { ssr: false })
+import { useRef } from 'react'
 
 // Dom components go here
 export default function Page(props) {
@@ -20,7 +13,6 @@ export default function Page(props) {
     const inputBaseMap = useRef()
 
     const onSubmit = async (e) => {
-        console.log("pressed URL submit!")
         e.preventDefault()
 
         const idValue = inputID.current.value
@@ -48,7 +40,6 @@ export default function Page(props) {
             if (!response.ok) throw new Error(`Error: ${response.status}`)
             const data = await response.json();
             if (response.status === 200) {
-                console.log("status 200!")
                 try {
                     const response = await fetch('/api/versionhistory', {
                         method: 'POST',
@@ -65,7 +56,7 @@ export default function Page(props) {
                     const data = await response.json();
 
                 } catch (e) {
-                    console.log('ERROR', e)
+                    alert("error", e)
                 }
                 for (let group = 0; group < numGroupsValue; group++) {
                     try {
@@ -84,15 +75,13 @@ export default function Page(props) {
                         const data = await response.json();
 
                     } catch (e) {
-                        console.log('ERROR', e)
+                        alert("error", e)
                     }
                 }
                 router.push("/blockbyblock")
             }
-            console.log("POST", data)
-
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
     return (
@@ -121,7 +110,6 @@ export default function Page(props) {
 // Canvas components go here
 // It will receive same props as the Page component (from getStaticProps, etc.)
 //Page.canvas = (props) => <Logo scale={0.5} route='/blob' position-y={-1} />
-Page.canvas = (props) => <Logo scale={0.5} route='/blockbyblock' position-y={-1} />
 
 export async function getStaticProps() {
     return { props: { title: 'Index' } }

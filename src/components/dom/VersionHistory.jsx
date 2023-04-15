@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Html } from '@react-three/drei'
 
 export function NewVersion({ workshopID, group, i, postVersion }) {
@@ -7,7 +7,6 @@ export function NewVersion({ workshopID, group, i, postVersion }) {
 
     let newVersion
     if (isEditing) {
-        console.log("editing VH", versionURL)
         newVersion = (
             <div >
                 <p>URL</p>
@@ -18,12 +17,6 @@ export function NewVersion({ workshopID, group, i, postVersion }) {
                     e.preventDefault()
                     setIsEditing(false)
                     postVersion(versionURL, workshopID, group)
-                    /*.then(function (result) {
-                        console.log("RESPONSE", result)
-                        if (result.status === 201) {
-                            setVersionURL("")
-                        }
-                    })*/
                     setVersionURL("")
                 }}>Save</button>
             </div>
@@ -60,7 +53,6 @@ export function NewVersion({ workshopID, group, i, postVersion }) {
     )
 }
 export function VersionHistory({ url, workshopID, group, i, selected, setSelected, deleteVersion }) {
-    console.log("selected", selected)
     const [show, setShow] = useState(false)
     let version = (
         <div style={{ color: "#000000" }}>

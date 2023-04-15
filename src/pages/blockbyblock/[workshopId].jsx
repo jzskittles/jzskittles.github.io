@@ -1,15 +1,15 @@
 import { useRouter } from 'next/router'
-import React, { useState, useRef, useEffect, useMemo } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
 import useRefs from 'react-use-refs';
-import { View, Bounds, OrthographicCamera, OrbitControls, ambientLight, pointLight, CameraControls, PerspectiveCamera, Html, Center, Environment, useGLTF, Clone, TransformControls } from '@react-three/drei'
-import { Canvas, extend, useThree, useFrame, useLoader } from '@react-three/fiber'
+import { View, OrbitControls, ambientLight, pointLight, PerspectiveCamera, Html } from '@react-three/drei'
+import { Canvas, extend, useThree, useLoader } from '@react-three/fiber'
 import { Annotations } from "@/components/dom/Annotations"
 import { NewVersion, VersionHistory } from "@/components/dom/VersionHistory"
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { NewComment, Comment, AnnotationContext } from '@/components/dom/Dialogue'
-import useSyncedCamera from './useSyncedCamera';
+import useSyncedCamera from '@/components/dom/useSyncedCamera';
 import { push as Menu } from 'react-burger-menu'
 extend({ Canvas })
 
@@ -23,7 +23,6 @@ function Workshop() {
         const response = await fetch('/api/workshops')
         const data = await response.json()
         setWorkshops(data)
-        console.log("FETCH", workshops, data)
     }
 
     useEffect(() => {
@@ -35,7 +34,7 @@ function Workshop() {
             if (workshop.id === workshopId) {
                 const numberOfGroups = parseInt(workshop.numGroups)
                 return (
-                    <div style={{ overflow: "auto" }} >
+                    <div key={workshop.id} style={{ overflow: "auto" }} >
                         <h1>Workshop: {workshop.name}</h1>
                         <div> -----------------------------------------</div>
                         <form>
@@ -51,7 +50,7 @@ function Workshop() {
                                 <>{[...Array(numberOfGroups)].map((x, i) => {
                                     const groupName = "Group " + (i + 1)
                                     return (
-                                        <TabPanel index={0} style={{ height: "65vh" }}>
+                                        <TabPanel key={i} index={i} style={{ height: "65vh" }}>
                                             <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={groupName} />
                                         </TabPanel>
                                     )
@@ -61,7 +60,7 @@ function Workshop() {
                                     <>{[...Array(numberOfGroups)].map((x, i) => {
                                         const groupName = "Group " + (i + 1)
                                         return (
-                                            <Tab label={groupName} > {groupName} </Tab>
+                                            <Tab key={i} label={groupName} > {groupName} </Tab>
                                         )
                                     }
                                     )}</>
@@ -82,11 +81,9 @@ function Workshop() {
 }
 
 function CompareBuilds({ workshop, fetchWorkshops }) {
-    console.log("comparebuilds", workshop)
-
     useEffect(() => {
         fetchWorkshops()
-    }, [])
+    })
     const numberOfGroups = parseInt(workshop.numGroups)
     const [ref, view1, view2] = useRefs()
 
@@ -96,88 +93,98 @@ function CompareBuilds({ workshop, fetchWorkshops }) {
     const [modelLURL, setModelLURL] = useState("")
     const [modelRURL, setModelRURL] = useState("")
 
-    return (
-        <>
-            <form>
-                <select style={{ color: '#000000' }} required
-                    value={compareGroupL}
-                    onChange={(e) => {
-                        e.preventDefault()
-                        setCompareGroupL(e.target.value)
-                        if (Object.hasOwn(workshop, e.target.value)) {
-                            console.log("workshop has group", workshop[e.target.value], e.target.value)
-                            setModelLURL(workshop[e.target.value])
-                        }
-                    }}>
-                    <option value="" hidden disabled selected> -- select an option -- </option>
-                    <>{[...Array(numberOfGroups)].map((x, i) => {
-                        const groupName = "Group " + (i + 1)
-                        return (
-                            <option key={i} value={groupName} label={groupName} style={{ color: '#000000' }}> {groupName} </option>
-                        )
-                    }
-                    )}</>
-                </select>
-                <select style={{ color: '#000000' }} required
-                    value={compareGroupR}
-                    onChange={(e) => {
-                        e.preventDefault()
-                        setCompareGroupR(e.target.value)
-                        if (Object.hasOwn(workshop, e.target.value)) {
-                            console.log("workshop has group", workshop[e.target.value], e.target.value)
-                            setModelRURL(workshop[e.target.value])
-                        }
-                    }}>
-                    <option value="" hidden disabled selected> -- select an option -- </option>
-                    <>{[...Array(numberOfGroups)].map((x, i) => {
-                        const groupName = "Group " + (i + 1)
-                        return (
-                            <option key={i} value={groupName} label={groupName} style={{ color: '#000000' }}> {groupName} </option>
-                        )
-                    }
-                    )}</>
-                </select>
-                <button type="button" style={{ color: "#ffffff" }} onClick={() => {
-                    setCompareGroupL("")
-                    setCompareGroupR("")
-                    setModelLURL("")
-                    setModelRURL("")
-                }}> Reset </button>
-            </form >
-            <div ref={ref} className="comparecanvas">
-                <div ref={view1} style={{ position: 'relative', overflow: 'hidden' }} />
-                <div ref={view2} style={{ position: 'relative', overflow: 'hidden' }} />
-                <Canvas eventSource={ref} className="canvas" id="canvas">
-                    <View index={1} track={view1} >
-                        <color attach="background" args={['#87CEEB']} />
-                        <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
-                        <ambientLight />
-                        <pointLight position={[10, 10, 10]} intensity={0.75} />
+    const [syncCameras, toggleSyncCameras] = useState(true)
 
-                        {modelLURL != "" && (<Model url={modelLURL} />)}
-                    </View>
-                    <View index={2} track={view2}>
-                        <color attach="background" args={['#87CEEB']} />
-                        <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
-                        <ambientLight />
-                        <pointLight position={[10, 10, 10]} intensity={0.75} />
-
-                        {modelRURL != "" && <Model url={modelRURL} />}
-                    </View>
-                </Canvas>
-            </div>
-        </>
-    )
+    return (<>
+        <form>
+            <select style={{ color: '#000000' }} required
+                value={compareGroupL}
+                onChange={(e) => {
+                    e.preventDefault()
+                    setCompareGroupL(e.target.value)
+                    if (Object.hasOwn(workshop, e.target.value)) {
+                        setModelLURL(workshop[e.target.value])
+                    }
+                }}>
+                <option value="" hidden disabled selected> -- select an option -- </option>
+                <>{[...Array(numberOfGroups)].map((x, i) => {
+                    const groupName = "Group " + (i + 1)
+                    return (
+                        <option key={i} value={groupName} label={groupName} style={{ color: '#000000' }}> {groupName} </option>
+                    )
+                }
+                )}</>
+            </select>
+            <select style={{ color: '#000000' }} required
+                value={compareGroupR}
+                onChange={(e) => {
+                    e.preventDefault()
+                    setCompareGroupR(e.target.value)
+                    if (Object.hasOwn(workshop, e.target.value)) {
+                        setModelRURL(workshop[e.target.value])
+                    }
+                }}>
+                <option value="" hidden disabled selected> -- select an option -- </option>
+                <>{[...Array(numberOfGroups)].map((x, i) => {
+                    const groupName = "Group " + (i + 1)
+                    return (
+                        <option key={i} value={groupName} label={groupName} style={{ color: '#000000' }}> {groupName} </option>
+                    )
+                }
+                )}</>
+            </select>
+            <button type="button" style={{ color: "#ffffff" }} onClick={() => {
+                setCompareGroupL("")
+                setCompareGroupR("")
+                setModelLURL("")
+                setModelRURL("")
+            }}> Reset </button>
+            <button type="button" style={{ color: "#ffffff" }} onClick={() => toggleSyncCameras(!syncCameras)}> Toggle Camera Sync </button>
+        </form >
+        <div ref={ref} className="comparecanvas">
+            <div ref={view1} style={{ position: 'relative', overflow: 'hidden' }} />
+            <div ref={view2} style={{ position: 'relative', overflow: 'hidden' }} />
+            <Canvas eventSource={ref} className="canvas" id="canvas">
+                <View index={1} track={view1} >
+                    <color attach="background" args={['#87CEEB']} />
+                    <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
+                    <ambientLight />
+                    <pointLight position={[10, 10, 10]} intensity={0.75} />
+                    {modelLURL != "" && <CompareModel url={modelLURL} synced={syncCameras} />}
+                </View>
+                <View index={2} track={view2}>
+                    <color attach="background" args={['#87CEEB']} />
+                    <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
+                    <ambientLight />
+                    <pointLight position={[10, 10, 10]} intensity={0.75} />
+                    {modelRURL != "" && <CompareModel url={modelRURL} synced={syncCameras} />}
+                </View>
+            </Canvas>
+        </div>
+    </>)
 }
 
-function Model({ url }) {
-    const update = useSyncedCamera(useThree)
+function CompareModel({ url, synced }) {
+    let update = useSyncedCamera(useThree)
+    let orbitControls = <OrbitControls makeDefault />
+    if (synced) {
+        orbitControls = <OrbitControls makeDefault onChange={update} />
+    }
+
+    const gltf = useLoader(GLTFLoader, url)
+    return (<>
+        <primitive object={gltf.scene} />
+        {orbitControls}
+    </>)
+}
+
+function Model({ url, clickedMesh }) {
     const gltf = useLoader(GLTFLoader, url)
 
     return (
         <>
-            <primitive object={gltf.scene} />
-            <OrbitControls makeDefault onChange={update} />
+            <primitive object={gltf.scene} onClick={clickedMesh} />
+            <OrbitControls makeDefault />
         </>
     )
 }
@@ -196,8 +203,6 @@ function ModelViewer({ url, workshopID, group }) {
 
     const [dialogue, setDialogue] = useState([])
 
-    const [gltf, setGLTF] = useState(useLoader(GLTFLoader, selectedURL))
-
     const [handler, setHandler] = useState("Handler")
     const [menuOpen, setMenuOpen] = useState(false)
 
@@ -206,27 +211,24 @@ function ModelViewer({ url, workshopID, group }) {
     const [to, setTo] = useState()
     const [target, setTarget] = useState()
 
-    const [ref, view1, view2] = useRefs()
+    const [ref, view1] = useRefs()
 
     const fetchAnnotations = async () => {
         const response = await fetch('/api/annotations')
         const data = await response.json()
         setAnnotations(data)
-        console.log("FETCH ANN", annotations, data)
     }
 
     const fetchVersionHistory = async () => {
         const response = await fetch('/api/versionhistory')
         const data = await response.json()
         setVersionURLs(data)
-        console.log("FETCH VH", versionURLs, selectedURL, data)
     }
 
     const fetchDialogue = async () => {
         const response = await fetch('/api/dialogue')
         const data = await response.json()
         setDialogue(data)
-        console.log("FETCH DIA", dialogue, data)
     }
 
     useEffect(() => {
@@ -243,7 +245,7 @@ function ModelViewer({ url, workshopID, group }) {
         }
     }, [selectedAnnotation])
 
-    useEffect(() => {
+    useEffect((group, workshopID) => {
         if (Object.hasOwn(versionURLs, workshopID) && Object.hasOwn(versionURLs[workshopID], group)) {
             if (selectedVersion == -1) {
                 const lastIndex = versionURLs[workshopID][group].length - 1
@@ -258,14 +260,7 @@ function ModelViewer({ url, workshopID, group }) {
         }
     }, [versionURLs, selectedVersion])
 
-    useEffect(() => {
-        console.log("GLTF USING URL", selectedURL)
-        setGLTF(useLoader(GLTFLoader, selectedURL))
-    }, [selectedURL])
-
-
     function gotoAnnotation(idx) {
-        console.log("GOING TO ANNOTATION", idx)
         setTo(annotations[idx].camPos)
         setTarget(annotations[idx].lookAt)
         setSelectedAnnotation(idx)
@@ -291,11 +286,10 @@ function ModelViewer({ url, workshopID, group }) {
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
             const data = await response.json();
-            console.log("POST", data, annotations[selectedURL].length)
             fetchAnnotations()
             setSelectedAnnotation(annotations[selectedURL].length)
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
 
@@ -317,11 +311,10 @@ function ModelViewer({ url, workshopID, group }) {
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
             const data = await response.json();
-            console.log("UPDATED", data, i)
             fetchAnnotations()
             setSelectedAnnotation(i)
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
 
@@ -340,7 +333,6 @@ function ModelViewer({ url, workshopID, group }) {
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
             const data = await response.json();
-            console.log("DELETED", data, i)
             fetchAnnotations()
             //when you delete an annotation, delete the comments attached to the annotation
             if (Object.hasOwn(dialogue, selectedURL) && i < dialogue[selectedURL].length) {
@@ -350,13 +342,12 @@ function ModelViewer({ url, workshopID, group }) {
             }
             setSelectedAnnotation(-1)
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
 
     const clickedMesh = async (e) => {
         if (editAnnotations) {
-            console.log("clicked mesh!", e.point.x, e.point.y, e.point.z, annotations[selectedURL].length)
             setEditAnnotation(false)
 
             postAnnotation("title" + annotations[selectedURL].length, "description", e.point.x, e.point.y, e.point.z)
@@ -396,10 +387,8 @@ function ModelViewer({ url, workshopID, group }) {
                     })
                     if (!newGroupVersionResponse.ok) throw new Error(`Error: ${newGroupVersionResponse.status}`)
                     const newVersionData = await newGroupVersionResponse.json();
-                    console.log("PUT", newVersionData)
-
                 } catch (e) {
-                    console.log('ERROR', e)
+                    alert("error", e)
                 }
             }
 
@@ -411,7 +400,7 @@ function ModelViewer({ url, workshopID, group }) {
             }
             return response
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
 
@@ -432,10 +421,8 @@ function ModelViewer({ url, workshopID, group }) {
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
             const data = await response.json();
-            console.log("DELETED", data, i, selectedVersion)
             fetchVersionHistory()
             if (response.status == 200) {
-                console.log("trying to put ", group, selectedVersion - 1, versionURLs[workshopID][group][selectedVersion - 1])
                 try {
                     const updateGroupVersionResponse = await fetch('/api/workshops', {
                         method: 'PUT',
@@ -450,14 +437,13 @@ function ModelViewer({ url, workshopID, group }) {
                     })
                     if (!updateGroupVersionResponse.ok) throw new Error(`Error: ${updateGroupVersionResponse.status}`)
                     const updateVersionData = await updateGroupVersionResponse.json();
-                    console.log("PUT", updateVersionData)
                 } catch (e) {
-                    console.log('ERROR', e)
+                    alert("error", e)
                 }
             }
             setSelectedVersion(selectedVersion - 1)
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
 
@@ -483,10 +469,9 @@ function ModelViewer({ url, workshopID, group }) {
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
             const data = await response.json();
-            console.log("DATA", data, selectedAnnotation)
             fetchDialogue()
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
 
@@ -506,14 +491,13 @@ function ModelViewer({ url, workshopID, group }) {
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
             const data = await response.json();
-            console.log("DELETED", data, i)
             fetchDialogue()
         } catch (e) {
-            console.log('ERROR', e)
+            alert("error", e)
         }
     }
 
-    var styles = {
+    const styles = {
         bmBurgerButton: {
             position: 'fixed',
             width: '36px',
@@ -572,7 +556,7 @@ function ModelViewer({ url, workshopID, group }) {
                             <AnnotationContext i={selectedAnnotation} title={annotations[selectedURL][selectedAnnotation]?.title} description={annotations[selectedURL][selectedAnnotation]?.description} />
                         )}
                         {Object.hasOwn(dialogue, selectedURL) != -1 && selectedAnnotation < dialogue[selectedURL].length && dialogue[selectedURL][selectedAnnotation].map((comment, i) => {
-                            return (<Comment i={i} name={comment.name} description={comment.description} datetime={comment.datetime} deleteComment={deleteComment} />)
+                            return (<Comment i={i} key={i} name={comment.name} description={comment.description} datetime={comment.datetime} deleteComment={deleteComment} />)
                         })}
                         {Object.hasOwn(dialogue, selectedURL) && (<NewComment i={dialogue[selectedURL][selectedAnnotation]?.length - 1 || 0} postComment={postComment} />
                         )}
@@ -583,12 +567,12 @@ function ModelViewer({ url, workshopID, group }) {
                 <>{
                     Object.hasOwn(versionURLs, workshopID) && Object.hasOwn(versionURLs[workshopID], group) && versionURLs[workshopID][group].map((url, i) => {
                         if (i == versionURLs[workshopID][group].length - 1 && group != "Base Map") {
-                            return (<>
+                            return (<group key={i}>
                                 <VersionHistory url={url} workshopID={workshopID} group={group} i={i} selected={selectedVersion} setSelected={setSelectedVersion} deleteVersion={deleteVersion} />
                                 <NewVersion workshopID={workshopID} group={group} i={i} postVersion={postVersion} />
-                            </>)
+                            </group>)
                         } else {
-                            return (<VersionHistory url={url} workshopID={workshopID} group={group} i={i} selected={selectedVersion} setSelected={setSelectedVersion} deleteVersion={deleteVersion} />)
+                            return (<VersionHistory key={i} url={url} workshopID={workshopID} group={group} i={i} selected={selectedVersion} setSelected={setSelectedVersion} deleteVersion={deleteVersion} />)
                         }
                     })
                 }</>
@@ -597,13 +581,12 @@ function ModelViewer({ url, workshopID, group }) {
                     <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
                     <ambientLight />
                     <pointLight position={[10, 10, 10]} intensity={0.75} />
-                    <primitive object={gltf.scene} onClick={clickedMesh} />
+                    <Model url={selectedURL} clickedMesh={clickedMesh} />
                     <>{Object.hasOwn(annotations, selectedURL) && annotations[selectedURL].map((a, i) => {
                         return (
-                            <Annotations title={a.title} description={a.description} x={a.lookAt.x} y={a.lookAt.y} z={a.lookAt.z} i={i} selected={selectedAnnotation} setSelected={setSelectedAnnotation} updateAnnotation={updateAnnotation} deleteAnnotation={deleteAnnotation} />
+                            <Annotations key={i} title={a.title} description={a.description} x={a.lookAt.x} y={a.lookAt.y} z={a.lookAt.z} i={i} selected={selectedAnnotation} setSelected={setSelectedAnnotation} updateAnnotation={updateAnnotation} deleteAnnotation={deleteAnnotation} />
                         )
                     })}</>
-                    <OrbitControls makeDefault target={[0, 0, 0]} />
 
                 </View>
                 <Html style={{ left: "-45vw", bottom: "-30vh" }} position={[0, 0, 0]}>
@@ -615,9 +598,5 @@ function ModelViewer({ url, workshopID, group }) {
         </div >
     )
 }
-/*<View index={2} track={view2} >
-                    
-
-                </View>*/
 
 export default Workshop

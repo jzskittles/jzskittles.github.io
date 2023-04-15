@@ -1,6 +1,5 @@
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback } from 'react'
 
-import { create } from 'zustand'
 import EventEmitter from 'eventemitter3'
 import { useThree as _useThree } from '@react-three/fiber'
 

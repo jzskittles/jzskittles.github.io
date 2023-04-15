@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Html } from '@react-three/drei'
+import React, { useState } from 'react'
 
 export function NewComment({ i, postComment }) {
     const [isEditing, setIsEditing] = useState(true)
@@ -8,7 +7,6 @@ export function NewComment({ i, postComment }) {
 
     let newComment
     if (isEditing) {
-        console.log("editing C", commentName, commentDescription)
         newComment = (
             <div className='newComment'>
                 <label for="name" >Name</label>
@@ -61,7 +59,6 @@ export function Comment({ i, name, description, datetime, deleteComment }) {
 }
 
 export function AnnotationContext({ i, title, description }) {
-    console.log("AnnotationContext", i, title, description)
     return (
         <div style={{
             paddingBottom: "0.5em",

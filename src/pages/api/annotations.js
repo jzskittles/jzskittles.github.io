@@ -54,26 +54,6 @@ export default function handler(req, res) {
             fs.writeFileSync(filePath, JSON.stringify({ annotations: annotations }))
             res.status(200).json(newAnnotation)
         }
-        /*annotations.map((current_annotation) => {
-            if (current_annotation.title === req.body.title) {
-                res.status(201).json({ message: "An annotation with this title has already been added" })
-                exists = true
-            }
-        })
-
-        if (!exists) {
-            const newAnnotation = {
-                title: req.body.title,
-                description: req.body.description,
-                url: req.body.url,
-                camPos: req.body.camPos,
-                lookAt: req.body.lookAt
-            }
-            const newAnnotations = [...annotations, newAnnotation]
-
-            fs.writeFileSync(filePath, JSON.stringify({ annotations: newAnnotations }))
-            res.status(200).json(newAnnotation)
-        }*/
     } else if (req.method === 'PUT') {
         let exists = false
 

@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 export default function ProjectPanel({ id, name, startDate, endDate, numGroups }) {
   const router = useRouter()
   const clicked = async (e) => {
-    console.log("clicked! " + id)
     router.push("/blockbyblock/" + id)
   }
   return (

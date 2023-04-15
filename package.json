@@ -9,6 +9,7 @@
   "engines": {
     "node": ">=14"
   },
+  "homepage": "https://jzskittles.github.io/",
   "scripts": {
     "lint": "yarn prettier && yarn eslint",
     "eslint": "next lint --fix --dir src",
@@ -17,7 +18,9 @@
     "build": "next build",
     "export": "EXPORT=true next build && EXPORT=true next export",
     "analyze": "ANALYZE=true next build",
-    "start": "next start"
+    "start": "next start",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@react-three/drei": "^9.56.5",
@@ -45,6 +48,7 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-tailwindcss": "^3.9.0",
     "file-loader": "^6.2.0",
+    "gh-pages": "^5.0.0",
     "glslify": "^7.1.1",
     "glslify-loader": "^2.0.0",
     "next-transpile-modules": "^10.0.0",

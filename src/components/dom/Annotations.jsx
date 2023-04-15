@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Html } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
 
 
 export function Annotations({ title, description, x, y, z, i, selected, setSelected, updateAnnotation, deleteAnnotation }) {

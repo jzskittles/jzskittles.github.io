@@ -18,14 +18,8 @@ export default function handler(req, res) {
     if (req.method === 'GET') {
         res.status(200).json(versionhistory)
     } else if (req.method === 'POST') {
-        console.log("POST", req.body.workshopID, req.body.group)
-        let exists = false
-
-        //check if version history for this workshop exists
         if (Object.hasOwn(versionhistory, req.body.workshopID)) {
-            console.log("has workshopID", req.body.workshopID)
             if (Object.hasOwn(versionhistory[req.body.workshopID], req.body.group)) {
-                console.log("has group", req.body.group)
                 const versionURLs = versionhistory[req.body.workshopID][req.body.group]
                 if (req.body.url) {
                     if (!versionURLs.includes(req.body.url)) {
@@ -43,7 +37,6 @@ export default function handler(req, res) {
                 res.status(200).json(versionhistory)
             }
         } else {
-            const groupName = req.body.group
             const newVersionHistory = {
                 [req.body.group]: [req.body.url]
             }
@@ -52,13 +45,10 @@ export default function handler(req, res) {
             res.status(200).json(versionhistory)
         }
     } else if (req.method === 'DELETE') {
-        console.log("DELETE", req.body.workshopID, req.body.group, req.body.index)
         const index = parseInt(req.body.index)
 
         if (Object.hasOwn(versionhistory, req.body.workshopID)) {
-            console.log("has workshopID", req.body.workshopID)
             if (Object.hasOwn(versionhistory[req.body.workshopID], req.body.group)) {
-                console.log("has group", req.body.group)
                 const versionURLs = versionhistory[req.body.workshopID][req.body.group]
                 if (index < versionURLs.length) {
                     const deletedVersion = versionURLs.splice(index, 1)

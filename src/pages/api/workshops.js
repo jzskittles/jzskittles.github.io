@@ -18,7 +18,6 @@ export default function handler(req, res) {
     if (req.method === 'GET') {
         res.status(200).json(workshops)
     } else if (req.method === 'POST') {
-        console.log("workshop name is", req.body.name)
         let exists = false
 
         workshops.map((currentWorkshop) => {
@@ -46,19 +45,15 @@ export default function handler(req, res) {
             }
 
             workshops.push(newWorkshop)
-            console.log("added workshop", workshops)
             fs.writeFileSync(filePath, JSON.stringify({ workshops: workshops }))
             res.status(200).json(workshops)
         }
     } else if (req.method === 'PUT') {
-        console.log("workshop id is", req.body.id)
-
         workshops.map((currentWorkshop) => {
             if (currentWorkshop.id === req.body.id) {
                 const groupName = req.body.editGroup
                 currentWorkshop[groupName] = req.body[groupName]
 
-                console.log("updated group", groupName, req.body[groupName], workshops)
                 fs.writeFileSync(filePath, JSON.stringify({ workshops: workshops }))
                 res.status(200).json(workshops)
             }

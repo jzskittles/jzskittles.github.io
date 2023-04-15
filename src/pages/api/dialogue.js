@@ -18,18 +18,13 @@ export default function handler(req, res) {
     if (req.method === 'GET') {
         res.status(200).json(dialogue)
     } else if (req.method === 'POST') {
-        console.log("POST", req.body.url, req.body.annotationindex, req.body.name, req.body.description, req.body.datetime)
-
-        //check if version history for this workshop exists
         if (Object.hasOwn(dialogue, req.body.url)) {
-            console.log("has url", req.body.url)
             const newComment = {
                 name: req.body.name,
                 description: req.body.description,
                 datetime: req.body.datetime,
             }
             if (Object.hasOwn(dialogue[req.body.url], req.body.annotationindex)) {
-                console.log("has annotation index", req.body.annotationindex)
                 const comments = dialogue[req.body.url][req.body.annotationindex]
 
                 comments.push(newComment)
@@ -43,14 +38,11 @@ export default function handler(req, res) {
             }
         }
     } else if (req.method === 'DELETE') {
-        console.log("DELETE", req.body.url, req.body.annotationindex, req.body.index)
         const index = parseInt(req.body.index)
 
         //check if version history for this workshop exists
         if (Object.hasOwn(dialogue, req.body.url)) {
-            console.log("has url", req.body.url)
             if (Object.hasOwn(dialogue[req.body.url], req.body.annotationindex)) {
-                console.log("has annotation index", req.body.annotationindex)
                 const comments = dialogue[req.body.url][req.body.annotationindex]
 
                 if (index < comments.length) {
