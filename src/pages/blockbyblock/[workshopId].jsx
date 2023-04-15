@@ -226,7 +226,7 @@ function ModelViewer({ url, workshopID, group }) {
     }
 
     const fetchDialogue = async () => {
-        const response = await fetch('/api/dialogue')
+        const response = await fetch('/api/get/dialogue')
         const data = await response.json()
         setDialogue(data)
     }
@@ -453,7 +453,7 @@ function ModelViewer({ url, workshopID, group }) {
             const time = dateObj.getHours() + ':' + dateObj.getMinutes()
             const date = (dateObj.getMonth() + 1) + "-" + dateObj.getDate() + "-" + dateObj.getFullYear()
 
-            const response = await fetch('/api/dialogue', {
+            const response = await fetch('/api/post/dialogue', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -477,7 +477,7 @@ function ModelViewer({ url, workshopID, group }) {
 
     async function deleteComment(i) {
         try {
-            const response = await fetch('/api/dialogue', {
+            const response = await fetch('/api/delete/dialogue', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

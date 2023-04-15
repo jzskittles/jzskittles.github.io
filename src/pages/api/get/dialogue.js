@@ -1,12 +1,6 @@
 import path from 'path'
 import fs from 'fs'
 
-export const config = {
-    api: {
-        bodyParser: process.env.NODE_ENV !== 'production'
-    }
-};
-
 function buildPath() {
     return path.join(process.cwd(), 'src', 'data', 'dialogue.json')
 }
@@ -20,9 +14,9 @@ function extractData(filePath) {
 export default function handler(req, res) {
     const filePath = buildPath()
     const { dialogue } = extractData(filePath)
+    res.status(200).json(dialogue)
 
-
-    if (req.method === 'GET') {
+    /*if (req.method === 'GET') {
         res.status(200).json(dialogue)
     } else if (req.method === 'POST') {
         console.log("req.body", req.body.url, dialogue)
@@ -63,5 +57,5 @@ export default function handler(req, res) {
                 }
             }
         }
-    }
+    }*/
 }
