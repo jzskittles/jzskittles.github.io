@@ -245,7 +245,7 @@ function ModelViewer({ url, workshopID, group }) {
         }
     }, [selectedAnnotation])
 
-    useEffect((group, workshopID) => {
+    useEffect(() => {
         if (Object.hasOwn(versionURLs, workshopID) && Object.hasOwn(versionURLs[workshopID], group)) {
             if (selectedVersion == -1) {
                 const lastIndex = versionURLs[workshopID][group].length - 1
@@ -289,7 +289,7 @@ function ModelViewer({ url, workshopID, group }) {
             fetchAnnotations()
             setSelectedAnnotation(annotations[selectedURL].length)
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
 
@@ -314,7 +314,7 @@ function ModelViewer({ url, workshopID, group }) {
             fetchAnnotations()
             setSelectedAnnotation(i)
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
 
@@ -342,7 +342,7 @@ function ModelViewer({ url, workshopID, group }) {
             }
             setSelectedAnnotation(-1)
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
 
@@ -388,7 +388,7 @@ function ModelViewer({ url, workshopID, group }) {
                     if (!newGroupVersionResponse.ok) throw new Error(`Error: ${newGroupVersionResponse.status}`)
                     const newVersionData = await newGroupVersionResponse.json();
                 } catch (e) {
-                    alert("error", e)
+                    alert(`error ${e}`)
                 }
             }
 
@@ -400,7 +400,7 @@ function ModelViewer({ url, workshopID, group }) {
             }
             return response
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
 
@@ -438,12 +438,12 @@ function ModelViewer({ url, workshopID, group }) {
                     if (!updateGroupVersionResponse.ok) throw new Error(`Error: ${updateGroupVersionResponse.status}`)
                     const updateVersionData = await updateGroupVersionResponse.json();
                 } catch (e) {
-                    alert("error", e)
+                    alert(`error ${e}`)
                 }
             }
             setSelectedVersion(selectedVersion - 1)
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
 
@@ -471,7 +471,7 @@ function ModelViewer({ url, workshopID, group }) {
             const data = await response.json();
             fetchDialogue()
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
 
@@ -493,7 +493,7 @@ function ModelViewer({ url, workshopID, group }) {
             const data = await response.json();
             fetchDialogue()
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
 

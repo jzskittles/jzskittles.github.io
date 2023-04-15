@@ -56,7 +56,7 @@ export default function Page(props) {
                     const data = await response.json();
 
                 } catch (e) {
-                    alert("error", e)
+                    alert(`error ${e}`)
                 }
                 for (let group = 0; group < numGroupsValue; group++) {
                     try {
@@ -75,13 +75,13 @@ export default function Page(props) {
                         const data = await response.json();
 
                     } catch (e) {
-                        alert("error", e)
+                        alert(`error ${e}`)
                     }
                 }
                 router.push("/blockbyblock")
             }
         } catch (e) {
-            alert("error", e)
+            alert(`error ${e}`)
         }
     }
     return (

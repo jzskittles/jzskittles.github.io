@@ -1,9 +1,16 @@
 import path from 'path'
 import fs from 'fs'
 
+export const config = {
+    api: {
+        bodyParser: process.env.NODE_ENV !== 'production'
+    }
+};
+
 function buildPath() {
     return path.join(process.cwd(), 'src', 'data', 'annotations.json')
 }
+
 
 function extractData(filePath) {
     const jsonData = fs.readFileSync(filePath, 'utf8')
