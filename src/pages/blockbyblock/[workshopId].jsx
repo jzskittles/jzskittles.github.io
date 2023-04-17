@@ -232,10 +232,13 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
     }
 
     useEffect(() => {
+        fetchVersionHistory()
+    }, [])
+
+    useEffect(() => {
         if (selectedVersion != -1) {
             fetchAnnotations()
         }
-        fetchVersionHistory()
         if (selectedAnnotation != -1) {
             fetchDialogue()
         }
@@ -573,7 +576,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
                     <>
                         <AnnotationContext i={selectedAnnotation} title={annotations[selectedAnnotation]?.title} description={annotations[selectedAnnotation]?.description} />
                         {dialogue.map((comment, i) => {
-                            if (Object.hasOwn(comment, annotationID) && selectedAnnotation != -1 && comment[annotationI] === annotations[selectedAnnotation]._id.toString()) {
+                            if (Object.hasOwn(comment, "annotationID") && selectedAnnotation < annotations.length && comment.annotationID === annotations[selectedAnnotation]._id.toString()) {
                                 return (<Comment i={i} key={i} name={comment.name} description={comment.description} datetime={comment.datetime} deleteComment={deleteComment} />)
                             }
                         })}
