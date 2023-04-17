@@ -4,6 +4,8 @@ export default async function handler(req, res) {
         headers: {
             "Content-Type": "application/json",
             "Access-Control-Request-Headers": "*",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true,
             "api-key": process.env.DATA_API_KEY,
         },
     };
