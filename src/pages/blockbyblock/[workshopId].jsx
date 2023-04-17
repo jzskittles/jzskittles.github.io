@@ -45,17 +45,17 @@ function Workshop() {
                         {viewerMode == "ModelViewer" && (
                             <Tabs id="groups" >
                                 <TabPanel index={0} style={{ height: "65vh" }}>
-                                    <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={"Base Map"} />
+                                    <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={"Base Map"} numberOfGroups={numberOfGroups} />
                                 </TabPanel>
                                 <>{[...Array(numberOfGroups)].map((x, i) => {
                                     const groupName = "Group " + (i + 1)
                                     return (
                                         <TabPanel key={i} index={i} style={{ height: "65vh" }}>
-                                            <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={groupName} />
+                                            <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={groupName} numberOfGroups={numberOfGroups} />
                                         </TabPanel>
                                     )
                                 })}</>
-                                <TabList style={{ fontSize: 18 / (numberOfGroups + 1) + "vw" }}>
+                                <TabList style={{ fontSize: "2em" }}>
                                     <Tab label="Base Map"> Base Map</Tab>
                                     <>{[...Array(numberOfGroups)].map((x, i) => {
                                         const groupName = "Group " + (i + 1)
@@ -192,7 +192,7 @@ function Model({ url, clickedMesh }) {
 //{modelRURL === modelLURL ? <Clone object={gltfL.scene} /> : <primitive object={gltfR.scene} />}
 //<primitive object={gltfR.scene} /> <primitive object={gltfL.scene} />
 
-function ModelViewer({ url, workshopID, group }) {
+function ModelViewer({ url, workshopID, group, numberOfGroups }) {
     const [editAnnotations, setEditAnnotation] = useState(false)
     const [annotations, setAnnotations] = useState([])
     const [selectedAnnotation, setSelectedAnnotation] = useState(-1)
@@ -203,7 +203,7 @@ function ModelViewer({ url, workshopID, group }) {
 
     const [dialogue, setDialogue] = useState([])
 
-    const [handler, setHandler] = useState("Handler")
+    const [handler, setHandler] = useState("Handler ")
     const [menuOpen, setMenuOpen] = useState(false)
 
     const orbitref = useRef()
@@ -214,31 +214,36 @@ function ModelViewer({ url, workshopID, group }) {
     const [ref, view1] = useRefs()
 
     const fetchAnnotations = async () => {
-        const response = await fetch('/api/annotations')
+        const response = await fetch(`/api/annotations/${workshopID}/${group}/${selectedVersion}`)
         const data = await response.json()
         setAnnotations(data)
     }
 
     const fetchVersionHistory = async () => {
-        const response = await fetch('/api/versionhistory')
+        const response = await fetch(`/api/versionhistory/${workshopID}/${group}`)
         const data = await response.json()
         setVersionURLs(data)
     }
 
     const fetchDialogue = async () => {
-        const response = await fetch('/api/get/dialogue')
+        const response = await fetch(`/api/dialogue/${workshopID}/${group}`)
         const data = await response.json()
         setDialogue(data)
     }
 
     useEffect(() => {
-        fetchAnnotations()
+        if (selectedVersion != -1) {
+            fetchAnnotations()
+        }
         fetchVersionHistory()
-        fetchDialogue()
+        if (selectedAnnotation != -1) {
+            fetchDialogue()
+        }
     }, [editAnnotations])
 
     useEffect(() => {
         if (selectedAnnotation != -1) {
+            fetchDialogue()
             setMenuOpen(true)
         } else {
             setMenuOpen(false)
@@ -246,14 +251,20 @@ function ModelViewer({ url, workshopID, group }) {
     }, [selectedAnnotation])
 
     useEffect(() => {
-        if (Object.hasOwn(versionURLs, workshopID) && Object.hasOwn(versionURLs[workshopID], group)) {
+        if (selectedVersion != -1) {
+            fetchAnnotations()
+        }
+    }, [selectedVersion])
+
+    useEffect(() => {
+        if (versionURLs.length > 0 && Object.hasOwn(versionURLs[0], group)) {
             if (selectedVersion == -1) {
-                const lastIndex = versionURLs[workshopID][group].length - 1
+                const lastIndex = versionURLs[0][group].length - 1
                 setSelectedVersion(lastIndex)
-                setSelectedURL(versionURLs[workshopID][group].slice(lastIndex)[0])
+                setSelectedURL(versionURLs[0][group].slice(lastIndex)[0])
             } else {
-                if (selectedVersion < versionURLs[workshopID][group].length) {
-                    setSelectedURL(versionURLs[workshopID][group][selectedVersion])
+                if (selectedVersion < versionURLs[0][group].length) {
+                    setSelectedURL(versionURLs[0][group][selectedVersion])
                     setSelectedAnnotation(-1)
                 }
             }
@@ -280,16 +291,21 @@ function ModelViewer({ url, workshopID, group }) {
                     description: description,
                     url: selectedURL,
                     camPos: { x: 0, y: 0, z: 0 },
-                    lookAt: { x: x, y: y, z: z }
+                    lookAt: { x: x, y: y, z: z },
+                    workshopID: workshopID,
+                    versionIndex: selectedVersion,
+                    groups: [group],
+                    baseMap: selectedURL === versionURLs[0][group][0],
+                    annotations: annotations,
+                    numGroups: numberOfGroups
                 })
             })
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
             fetchAnnotations()
-            setSelectedAnnotation(annotations[selectedURL].length)
+            setSelectedAnnotation(annotations.length)
         } catch (e) {
-            alert(`error ${e}`)
+            console.log("error", e)
         }
     }
 
@@ -305,20 +321,21 @@ function ModelViewer({ url, workshopID, group }) {
                     description: description,
                     url: selectedURL,
                     camPos: { x: 0, y: 0, z: 0 },
-                    lookAt: { x: x, y: y, z: z }
+                    lookAt: { x: x, y: y, z: z },
+                    _id: annotations[i]._id.toString()
                 })
             })
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
             fetchAnnotations()
             setSelectedAnnotation(i)
         } catch (e) {
-            alert(`error ${e}`)
+            console.log(`error ${e}`)
         }
     }
 
     async function deleteAnnotation(i) {
+        const annotationID = annotations[i]._id.toString()
         try {
             const response = await fetch('/api/annotations', {
                 method: 'DELETE',
@@ -326,86 +343,83 @@ function ModelViewer({ url, workshopID, group }) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    index: i,
-                    url: selectedURL
+                    _id: annotationID
                 })
             })
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
             fetchAnnotations()
             //when you delete an annotation, delete the comments attached to the annotation
-            if (Object.hasOwn(dialogue, selectedURL) && i < dialogue[selectedURL].length) {
-                for (let c = dialogue[selectedURL][i].length - 1; c >= 0; c--) {
+            for (let c = dialogue.length - 1; c >= 0; c--) {
+                if (dialogue[c].annotationID === annotationID) {
                     deleteComment(c)
                 }
             }
             setSelectedAnnotation(-1)
         } catch (e) {
-            alert(`error ${e}`)
+            console.log(`error ${e}`)
         }
     }
 
     const clickedMesh = async (e) => {
         if (editAnnotations) {
+            e.stopPropagation()
             setEditAnnotation(false)
 
-            postAnnotation("title" + annotations[selectedURL].length, "description", e.point.x, e.point.y, e.point.z)
+            postAnnotation("title" + (annotations.length + 1), "description", e.point.x, e.point.y, e.point.z)
         }
     }
 
     //when you post a new version, also add new object to annotations with new url
-    async function postVersion(url, workshopID, group) {
-        try {
-            const response = await fetch('/api/versionhistory', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    url: url,
-                    workshopID: workshopID,
-                    group: group
-                })
-            })
-
-            if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
-            fetchVersionHistory()
-            if (response.status == 200) {
-                try {
-                    const newGroupVersionResponse = await fetch('/api/workshops', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            id: workshopID,
-                            editGroup: group,
-                            [group]: url
-                        })
+    async function postVersion(url) {
+        if (versionURLs[0][group].includes(url)) {
+            setHandler("Handler: A version with this URL has already been added")
+            setSelectedVersion(versionURLs[0][group].length - 1)
+            setTimeout(() => { setHandler("Handler") }, 3000)
+        } else {
+            try {
+                const response = await fetch('/api/versionhistory', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        workshopID: workshopID,
+                        group: group
                     })
-                    if (!newGroupVersionResponse.ok) throw new Error(`Error: ${newGroupVersionResponse.status}`)
-                    const newVersionData = await newGroupVersionResponse.json();
-                } catch (e) {
-                    alert(`error ${e}`)
-                }
-            }
+                })
 
-            if (response.status == 201) {
-                setHandler(data.message)
-                setSelectedVersion(versionURLs[workshopID][group].length - 1)
-            } else {
-                setSelectedVersion(versionURLs[workshopID][group].length)
+                if (!response.ok) throw new Error(`Error: ${response.status}`)
+                const data = await response.json();
+                fetchVersionHistory()
+                if (response.status == 200) {
+                    try {
+                        const newGroupVersionResponse = await fetch('/api/workshops', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id: workshopID,
+                                group: group,
+                                url: url
+                            })
+                        })
+                        if (!newGroupVersionResponse.ok) throw new Error(`Error: ${newGroupVersionResponse.status}`)
+                    } catch (e) {
+                        console.log(`error ${e}`)
+                    }
+                    setSelectedVersion(versionURLs[0][group].length)
+                }
+            } catch (e) {
+                console.log(`error ${e}`)
             }
-            return response
-        } catch (e) {
-            alert(`error ${e}`)
         }
+
     }
 
-    //when you delete a version, make sure to delete annotations for that url as well
-    async function deleteVersion(i, workshopID, group) {
+    async function deleteVersion(i) {
         try {
             const response = await fetch('/api/versionhistory', {
                 method: 'DELETE',
@@ -415,14 +429,15 @@ function ModelViewer({ url, workshopID, group }) {
                 body: JSON.stringify({
                     index: i,
                     workshopID: workshopID,
-                    group: group
+                    group: group,
+                    url: versionURLs[0][group][selectedVersion]
                 })
             })
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
             fetchVersionHistory()
             if (response.status == 200) {
+                //resetting latest version in workshops database
                 try {
                     const updateGroupVersionResponse = await fetch('/api/workshops', {
                         method: 'PUT',
@@ -431,19 +446,23 @@ function ModelViewer({ url, workshopID, group }) {
                         },
                         body: JSON.stringify({
                             id: workshopID,
-                            editGroup: group,
-                            [group]: versionURLs[workshopID][group][selectedVersion - 1]
+                            group: group,
+                            url: versionURLs[0][group][selectedVersion - 1]
                         })
                     })
                     if (!updateGroupVersionResponse.ok) throw new Error(`Error: ${updateGroupVersionResponse.status}`)
-                    const updateVersionData = await updateGroupVersionResponse.json();
                 } catch (e) {
-                    alert(`error ${e}`)
+                    console.log(`error ${e}`)
                 }
+
+                //deleting annotations associated with this version
+                for (let index = annotations.length - 1; index >= 0; index--) {
+                    deleteAnnotation(index)
+                }
+                setSelectedVersion(selectedVersion - 1)
             }
-            setSelectedVersion(selectedVersion - 1)
         } catch (e) {
-            alert(`error ${e}`)
+            console.log(`error ${e}`)
         }
     }
 
@@ -453,47 +472,47 @@ function ModelViewer({ url, workshopID, group }) {
             const time = dateObj.getHours() + ':' + dateObj.getMinutes()
             const date = (dateObj.getMonth() + 1) + "-" + dateObj.getDate() + "-" + dateObj.getFullYear()
 
-            const response = await fetch('/api/post/dialogue', {
+            const response = await fetch('/api/dialogue', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     url: selectedURL,
-                    annotationindex: selectedAnnotation,
+                    annotationID: annotations[selectedAnnotation]._id.toString(),
                     name: name,
                     description: description,
-                    datetime: time + ", " + date
+                    datetime: time + ", " + date,
+                    workshopID: workshopID,
+                    groups: [group],
+                    baseMap: selectedURL === versionURLs[0][group][0],
+                    numGroups: numberOfGroups
                 })
             })
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
             fetchDialogue()
         } catch (e) {
-            alert(`error ${e}`)
+            console.log(`error ${e}`)
         }
     }
 
-    async function deleteComment(i) {
+    async function deleteComment(index) {
         try {
-            const response = await fetch('/api/delete/dialogue', {
+            const response = await fetch('/api/dialogue', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    url: selectedURL,
-                    annotationindex: selectedAnnotation,
-                    index: i
+                    _id: dialogue[index]._id.toString()
                 })
             })
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
             fetchDialogue()
         } catch (e) {
-            alert(`error ${e}`)
+            console.log(`error ${e}`)
         }
     }
 
@@ -552,21 +571,20 @@ function ModelViewer({ url, workshopID, group }) {
                     <div>Select an Annotation to view dialogue!</div>
                 ) : (
                     <>
-                        {Object.hasOwn(dialogue, selectedURL) && (
-                            <AnnotationContext i={selectedAnnotation} title={annotations[selectedURL][selectedAnnotation]?.title} description={annotations[selectedURL][selectedAnnotation]?.description} />
-                        )}
-                        {Object.hasOwn(dialogue, selectedURL) != -1 && selectedAnnotation < dialogue[selectedURL].length && dialogue[selectedURL][selectedAnnotation].map((comment, i) => {
-                            return (<Comment i={i} key={i} name={comment.name} description={comment.description} datetime={comment.datetime} deleteComment={deleteComment} />)
+                        <AnnotationContext i={selectedAnnotation} title={annotations[selectedAnnotation]?.title} description={annotations[selectedAnnotation]?.description} />
+                        {dialogue.map((comment, i) => {
+                            if (comment.annotationID === annotations[selectedAnnotation]._id.toString()) {
+                                return (<Comment i={i} key={i} name={comment.name} description={comment.description} datetime={comment.datetime} deleteComment={deleteComment} />)
+                            }
                         })}
-                        {Object.hasOwn(dialogue, selectedURL) && (<NewComment i={dialogue[selectedURL][selectedAnnotation]?.length - 1 || 0} postComment={postComment} />
-                        )}
+                        <NewComment i={dialogue.length - 1 || 0} postComment={postComment} />
                     </>
                 )}
             </Menu>
             <Canvas eventSource={ref} className="canvas" id="canvas">
                 <>{
-                    Object.hasOwn(versionURLs, workshopID) && Object.hasOwn(versionURLs[workshopID], group) && versionURLs[workshopID][group].map((url, i) => {
-                        if (i == versionURLs[workshopID][group].length - 1 && group != "Base Map") {
+                    versionURLs.length > 0 && Object.hasOwn(versionURLs[0], group) && versionURLs[0][group].map((url, i) => {
+                        if (i == versionURLs[0][group].length - 1 && group != "Base Map") {
                             return (<group key={i}>
                                 <VersionHistory url={url} workshopID={workshopID} group={group} i={i} selected={selectedVersion} setSelected={setSelectedVersion} deleteVersion={deleteVersion} />
                                 <NewVersion workshopID={workshopID} group={group} i={i} postVersion={postVersion} />
@@ -581,8 +599,8 @@ function ModelViewer({ url, workshopID, group }) {
                     <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
                     <ambientLight />
                     <pointLight position={[10, 10, 10]} intensity={0.75} />
-                    <Model url={selectedURL} clickedMesh={clickedMesh} />
-                    <>{Object.hasOwn(annotations, selectedURL) && annotations[selectedURL].map((a, i) => {
+                    {selectedVersion != -1 && <Model url={selectedURL} clickedMesh={clickedMesh} />}
+                    <>{annotations.map((a, i) => {
                         return (
                             <Annotations key={i} title={a.title} description={a.description} x={a.lookAt.x} y={a.lookAt.y} z={a.lookAt.z} i={i} selected={selectedAnnotation} setSelected={setSelectedAnnotation} updateAnnotation={updateAnnotation} deleteAnnotation={deleteAnnotation} />
                         )

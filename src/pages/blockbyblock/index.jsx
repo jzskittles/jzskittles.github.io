@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
 // Dom components go here
-export default function Page(props) {
+export default function Page() {
   const router = useRouter()
   const [workshops, setWorkshops] = useState([])
 
@@ -14,7 +14,9 @@ export default function Page(props) {
     setWorkshops(data)
   }
 
-  useEffect(() => { fetchWorkshops() }, [router.query.slug])
+  useEffect(() => {
+    fetchWorkshops()
+  }, [router.query.slug])
 
   return (
     <div>
@@ -30,10 +32,6 @@ export default function Page(props) {
   )
 }
 
-// Canvas components go here
-// It will receive same props as the Page component (from getStaticProps, etc.)
-//Page.canvas = (props) => <Logo scale={0.5} route='/blob' position-y={-1} />
-
-export async function getStaticProps() {
+export async function getServerSideProps() {
   return { props: { title: 'Index' } }
 }

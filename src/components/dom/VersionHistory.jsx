@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Html } from '@react-three/drei'
 
-export function NewVersion({ workshopID, group, i, postVersion }) {
+export function NewVersion({ i, postVersion }) {
     const [isEditing, setIsEditing] = useState(false)
     const [versionURL, setVersionURL] = useState()
 
@@ -16,7 +16,7 @@ export function NewVersion({ workshopID, group, i, postVersion }) {
                 <button onClick={(e) => {
                     e.preventDefault()
                     setIsEditing(false)
-                    postVersion(versionURL, workshopID, group)
+                    postVersion(versionURL)
                     setVersionURL("")
                 }}>Save</button>
             </div>
@@ -52,13 +52,13 @@ export function NewVersion({ workshopID, group, i, postVersion }) {
         </group>
     )
 }
-export function VersionHistory({ url, workshopID, group, i, selected, setSelected, deleteVersion }) {
+export function VersionHistory({ i, selected, setSelected, deleteVersion }) {
     const [show, setShow] = useState(false)
     let version = (
         <div style={{ color: "#000000" }}>
             {i != 0 && <button onClick={(e) => {
                 e.preventDefault()
-                deleteVersion(i, workshopID, group)
+                deleteVersion(i)
             }}>Delete</button>}
         </div>
     )

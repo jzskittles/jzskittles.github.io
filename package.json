@@ -1,8 +1,8 @@
 {
-  "name": "react-three-next",
+  "name": "block-by-block-thesis",
   "version": "2.0.0",
   "authors": [
-    "Renaud ROHLINGER <https://twitter.com/onirenaud>"
+    "Jenny Zhang"
   ],
   "license": "MIT",
   "private": true,
@@ -26,6 +26,7 @@
     "eventemitter3": "^5.0.0",
     "glsl-random": "^0.0.5",
     "jszip": "^3.10.1",
+    "mongodb": "^5.2.0",
     "next": "^13.1.6",
     "next-pwa": "^5.6.0",
     "react": "^18.2.0",

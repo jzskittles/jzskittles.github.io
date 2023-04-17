@@ -38,10 +38,11 @@ export default function Page(props) {
                 })
             })
             if (!response.ok) throw new Error(`Error: ${response.status}`)
-            const data = await response.json();
+
+            //if you successfully make a new workshop, create initial versionhistory for all groups
             if (response.status === 200) {
                 try {
-                    const response = await fetch('/api/versionhistory', {
+                    const newBaseVersionResponse = await fetch('/api/versionhistory', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -52,15 +53,13 @@ export default function Page(props) {
                             url: baseMapValue
                         })
                     })
-                    if (!response.ok) throw new Error(`Error: ${response.status}`)
-                    const data = await response.json();
-
+                    if (!newBaseVersionResponse.ok) throw new Error(`Error: ${newBaseVersionResponse.status}`)
                 } catch (e) {
-                    alert(`error ${e}`)
+                    console.log(`error ${e}`)
                 }
                 for (let group = 0; group < numGroupsValue; group++) {
                     try {
-                        const response = await fetch('/api/versionhistory', {
+                        const newGroupVersionResponse = await fetch('/api/versionhistory', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -71,17 +70,15 @@ export default function Page(props) {
                                 url: baseMapValue
                             })
                         })
-                        if (!response.ok) throw new Error(`Error: ${response.status}`)
-                        const data = await response.json();
-
+                        if (!newGroupVersionResponse.ok) throw new Error(`Error: ${newGroupVersionResponse.status}`)
                     } catch (e) {
-                        alert(`error ${e}`)
+                        console.log(`error ${e}`)
                     }
                 }
                 router.push("/blockbyblock")
             }
         } catch (e) {
-            alert(`error ${e}`)
+            console.log(`error ${e}`)
         }
     }
     return (
