@@ -20,6 +20,7 @@ export default function Page() {
 
   return (
     <div>
+      <h1>Block By Block Workshops</h1>
       <>
         {workshops.map((workshop) => {
           return (
@@ -27,7 +28,9 @@ export default function Page() {
           )
         })}
       </>
-      <Link href='/createnewproject'> + Create New Project</Link>
+      <div style={{ padding: "20px", border: "1px solid", borderRadius: "10px", maxWidth: "600px", margin: "auto", backgroundColor: "#9DC8EB", color: "#000000" }}>
+        <Link href='/createnewproject'> + Create New Project</Link>
+      </div>
     </div>
   )
 }

@@ -62,9 +62,9 @@ export function VersionHistory({ i, selected, setSelected, deleteVersion }) {
             }}>Delete</button>}
         </div>
     )
-    let fillColor = "#000080"
+    let fillColor = "#76BCE8"
     if (selected == i) {
-        fillColor = "#3CB043"
+        fillColor = "#9BBE49"
     }
 
     return (
@@ -77,7 +77,7 @@ export function VersionHistory({ i, selected, setSelected, deleteVersion }) {
                             setShow(false)
                         } else {
                             setSelected(i)
-                            fillColor = "#3CB043"
+                            fillColor = "#9BBE49"
                             setShow(true)
                         }
                     }} />

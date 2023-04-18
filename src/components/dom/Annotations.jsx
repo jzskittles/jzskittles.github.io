@@ -34,18 +34,18 @@ export function Annotations({ title, description, x, y, z, i, selected, setSelec
             </div>
         )
 
-    } else {
+    } /*else {
         newAnnotation = (
             <div>
                 <button onClick={() => setIsEditing(true)}>Edit</button>
                 <button onClick={() => deleteAnnotation(i)}>Delete</button>
             </div>
         )
-    }
+    }*/
 
-    let fillColor = "#000080"
+    let fillColor = "#76BCE8"
     if (selected == i) {
-        fillColor = "#3CB043"
+        fillColor = "#9BBE49"
     }
 
 
@@ -59,7 +59,7 @@ export function Annotations({ title, description, x, y, z, i, selected, setSelec
                         e.preventDefault()
                         if (selected === i) {
                             setSelected(-1)
-                            fillColor = "#3CB043"
+                            fillColor = "#9BBE49"
                         } else {
                             setSelected(i)
                         }

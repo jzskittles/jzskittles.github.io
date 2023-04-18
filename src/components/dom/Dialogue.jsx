@@ -58,15 +58,64 @@ export function Comment({ i, name, description, datetime, deleteComment }) {
     )
 }
 
-export function AnnotationContext({ i, title, description }) {
+export function AnnotationContext({ i, editing, title, description, updateAnnotation, deleteAnnotation }) {
+    const [isEditing, setIsEditing] = useState(editing)
+    const [annotationTitle, setAnnotationTitle] = useState(title)
+    const [annotationDescription, setAnnotationDescription] = useState(description)
+
+    let annotationContext
+    if (isEditing) {
+        annotationContext = (
+            <div>
+                <p className='alignleft' style={{ fontSize: "1.3em" }}>Annotation {i != -1 && i + 1}</p>
+                <button onClick={() => deleteAnnotation(i)} className='alignright'>Delete</button>
+                <br />
+                <br />
+                <p>Title</p>
+                <input label="title" defaultValue={annotationTitle}
+                    onChange={(e) => {
+                        e.preventDefault()
+                        setAnnotationTitle(e.target.value)
+                    }}
+                    type="text" style={{ color: "#000000", border: "2px solid #ccc", borderRadius: "5px", minWidth: "15em" }} />
+                <p>Description</p>
+                <textarea label="description"
+                    defaultValue={annotationDescription}
+                    onChange={(e) => {
+                        e.preventDefault()
+                        setAnnotationDescription(e.target.value)
+                    }}
+                    type="text" style={{ color: "#000000", border: "2px solid #ccc", borderRadius: "5px", minWidth: "15em" }} />
+                <button onClick={(e) => {
+                    e.preventDefault()
+                    setIsEditing(false)
+                    updateAnnotation(annotationTitle, annotationDescription, i)
+                }}>Save</button>
+                <p style={{ paddingTop: "10px" }}>Comments</p>
+            </div>
+        )
+
+    } else {
+        if (title != annotationTitle) {
+            setAnnotationTitle(title)
+        }
+        if (description != annotationDescription) {
+            setAnnotationDescription(description)
+        }
+        annotationContext = (
+            <div>
+                <p className='alignleft' style={{ fontSize: "1.3em" }}>Annotation {i != -1 && i + 1}</p>
+                <button onClick={() => deleteAnnotation(i)} className='alignright'>Delete</button>
+                <br />
+                <br />
+                <button onClick={() => setIsEditing(true)} className='alignright'>Edit</button>
+                <p>{title}</p>
+                <p>{description}</p>
+                <p style={{ paddingTop: "10px" }}>Comments</p>
+            </div>
+        )
+    }
     return (
-        <div style={{
-            paddingBottom: "0.5em",
-            fontSize: "1.05em"
-        }}>
-            <p>Annotation {i != -1 && i + 1}</p>
-            <p>Title: {title}</p>
-            <p>Description: {description}</p>
-        </div>
+        <div style={{ paddingBottom: "0.5em", fontSize: "1.05em" }}>{annotationContext}</div>
     )
 }

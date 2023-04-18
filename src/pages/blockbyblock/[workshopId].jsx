@@ -18,6 +18,7 @@ function Workshop() {
     const workshopId = router.query.workshopId
     const [workshops, setWorkshops] = useState([])
     const [viewerMode, setViewerMode] = useState("ModelViewer")
+    const [editAnnotations, setEditAnnotation] = useState(false)
 
     const fetchWorkshops = async () => {
         const response = await fetch('/api/workshops')
@@ -36,26 +37,26 @@ function Workshop() {
                 return (
                     <div key={workshop.id} style={{ overflow: "auto" }} >
                         <h1>Workshop: {workshop.name}</h1>
-                        <div> -----------------------------------------</div>
                         <form>
                             <button type="button" style={{ color: "#ffffff" }} onClick={() => router.push("/blockbyblock")}> Project Selection </button>
-                            <button type="button" style={{ color: "#ffffff" }} onClick={() => setViewerMode("ModelViewer")}> Home </button>
-                            <button type="button" style={{ color: "#ffffff" }} onClick={() => setViewerMode("CompareBuilds")}> Compare Builds </button>
+                            <button type="button" style={{ color: "#ffffff", backgroundColor: viewerMode === "ModelViewer" ? "#76BCE8" : "#000000" }} onClick={() => setViewerMode("ModelViewer")}> Model Viewer </button>
+                            <button type="button" style={{ color: "#ffffff", backgroundColor: viewerMode === "CompareBuilds" ? "#76BCE8" : "#000000" }} onClick={() => setViewerMode("CompareBuilds")}> Compare Builds </button>
+                            <button type="button" className='alignright' onClick={() => setEditAnnotation(true)} style={{ color: "#ffffff", marginRight: viewerMode === "ModelViewer" ? "100px" : "0px" }}> Add Annotation </button>
                         </form>
                         {viewerMode == "ModelViewer" && (
                             <Tabs id="groups" >
                                 <TabPanel index={0} style={{ height: "65vh" }}>
-                                    <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={"Base Map"} numberOfGroups={numberOfGroups} />
+                                    <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={"Base Map"} numberOfGroups={numberOfGroups} editAnnotations={editAnnotations} setEditAnnotation={setEditAnnotation} />
                                 </TabPanel>
                                 <>{[...Array(numberOfGroups)].map((x, i) => {
                                     const groupName = "Group " + (i + 1)
                                     return (
                                         <TabPanel key={i} index={i} style={{ height: "65vh" }}>
-                                            <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={groupName} numberOfGroups={numberOfGroups} />
+                                            <ModelViewer url={workshop.baseMap} workshopID={workshop.id} group={groupName} numberOfGroups={numberOfGroups} editAnnotations={editAnnotations} setEditAnnotation={setEditAnnotation} />
                                         </TabPanel>
                                     )
                                 })}</>
-                                <TabList style={{ fontSize: "2em" }}>
+                                <TabList style={{ fontSize: "clamp(0.1rem, 1.6vw, 1.4rem)" }}>
                                     <Tab label="Base Map"> Base Map</Tab>
                                     <>{[...Array(numberOfGroups)].map((x, i) => {
                                         const groupName = "Group " + (i + 1)
@@ -96,7 +97,7 @@ function CompareBuilds({ workshop, fetchWorkshops }) {
     const [syncCameras, toggleSyncCameras] = useState(true)
 
     return (<>
-        <form>
+        <form style={{ maxWidth: "550px", margin: "auto" }}>
             <select style={{ color: '#000000' }} required
                 value={compareGroupL}
                 onChange={(e) => {
@@ -141,19 +142,20 @@ function CompareBuilds({ workshop, fetchWorkshops }) {
             }}> Reset </button>
             <button type="button" style={{ color: "#ffffff" }} onClick={() => toggleSyncCameras(!syncCameras)}> Toggle Camera Sync </button>
         </form >
+
         <div ref={ref} className="comparecanvas">
             <div ref={view1} style={{ position: 'relative', overflow: 'hidden' }} />
             <div ref={view2} style={{ position: 'relative', overflow: 'hidden' }} />
             <Canvas eventSource={ref} className="canvas" id="canvas">
                 <View index={1} track={view1} >
-                    <color attach="background" args={['#87CEEB']} />
+                    <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
                     <ambientLight />
                     <pointLight position={[10, 10, 10]} intensity={0.75} />
                     {modelLURL != "" && <CompareModel url={modelLURL} synced={syncCameras} />}
                 </View>
                 <View index={2} track={view2}>
-                    <color attach="background" args={['#87CEEB']} />
+                    <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
                     <ambientLight />
                     <pointLight position={[10, 10, 10]} intensity={0.75} />
@@ -189,11 +191,7 @@ function Model({ url, clickedMesh }) {
     )
 }
 
-//{modelRURL === modelLURL ? <Clone object={gltfL.scene} /> : <primitive object={gltfR.scene} />}
-//<primitive object={gltfR.scene} /> <primitive object={gltfL.scene} />
-
-function ModelViewer({ url, workshopID, group, numberOfGroups }) {
-    const [editAnnotations, setEditAnnotation] = useState(false)
+function ModelViewer({ url, workshopID, group, numberOfGroups, editAnnotations, setEditAnnotation }) {
     const [annotations, setAnnotations] = useState([])
     const [selectedAnnotation, setSelectedAnnotation] = useState(-1)
 
@@ -281,6 +279,12 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
         //setLerping(true)
     }
 
+    function setEventHandler(message) {
+        setHandler("Handler: " + message)
+        setSelectedVersion(versionURLs[0][group].length - 1)
+        setTimeout(() => { setHandler("Handler") }, 3000)
+    }
+
     //when you add a new annotation, create a new object for comments in dialogue
     async function postAnnotation(title, description, x, y, z) {
         try {
@@ -312,7 +316,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
         }
     }
 
-    async function updateAnnotation(title, description, x, y, z, i) {
+    async function updateAnnotation(title, description, i) {
         try {
             const response = await fetch('/api/annotations', {
                 method: 'PUT',
@@ -324,7 +328,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
                     description: description,
                     url: selectedURL,
                     camPos: { x: 0, y: 0, z: 0 },
-                    lookAt: { x: x, y: y, z: z },
+                    lookAt: { x: annotations[i].lookAt.x, y: annotations[i].lookAt.y, z: annotations[i].lookAt.z },
                     _id: annotations[i]._id.toString()
                 })
             })
@@ -351,6 +355,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
             })
 
             if (!response.ok) throw new Error(`Error: ${response.status}`)
+            setEventHandler("Successfully deleted annotation!")
             fetchAnnotations()
             //when you delete an annotation, delete the comments attached to the annotation
             for (let c = dialogue.length - 1; c >= 0; c--) {
@@ -376,9 +381,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
     //when you post a new version, also add new object to annotations with new url
     async function postVersion(url) {
         if (versionURLs[0][group].includes(url)) {
-            setHandler("Handler: A version with this URL has already been added")
-            setSelectedVersion(versionURLs[0][group].length - 1)
-            setTimeout(() => { setHandler("Handler") }, 3000)
+            setEventHandler("A version with this URL has already been added")
         } else {
             try {
                 const response = await fetch('/api/versionhistory', {
@@ -397,6 +400,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
                 const data = await response.json();
                 fetchVersionHistory()
                 if (response.status == 200) {
+                    setEventHandler("Successfully added a new version!")
                     try {
                         const newGroupVersionResponse = await fetch('/api/workshops', {
                             method: 'PUT',
@@ -548,7 +552,8 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
         bmMenu: {
             background: '#373a47',
             padding: '1em',
-            fontSize: '1em'
+            fontSize: '1em',
+            overflowX: 'hidden'
         },
         bmMorphShape: {
             fill: '#373a47'
@@ -574,7 +579,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
                     <div>Select an Annotation to view dialogue!</div>
                 ) : (
                     <>
-                        <AnnotationContext i={selectedAnnotation} title={annotations[selectedAnnotation]?.title} description={annotations[selectedAnnotation]?.description} />
+                        <AnnotationContext i={selectedAnnotation} editing={selectedAnnotation === annotations.length} title={annotations[selectedAnnotation]?.title} description={annotations[selectedAnnotation]?.description} updateAnnotation={updateAnnotation} deleteAnnotation={deleteAnnotation} />
                         {dialogue.map((comment, i) => {
                             if (Object.hasOwn(comment, "annotationID") && selectedAnnotation < annotations.length && comment.annotationID === annotations[selectedAnnotation]._id.toString()) {
                                 return (<Comment i={i} key={i} name={comment.name} description={comment.description} datetime={comment.datetime} deleteComment={deleteComment} />)
@@ -598,7 +603,7 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
                     })
                 }</>
                 <View index={1} track={view1} >
-                    <color attach="background" args={['#87CEEB']} />
+                    <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[-3, 3, 5]} />
                     <ambientLight />
                     <pointLight position={[10, 10, 10]} intensity={0.75} />
@@ -611,9 +616,9 @@ function ModelViewer({ url, workshopID, group, numberOfGroups }) {
 
                 </View>
                 <Html style={{ left: "-45vw", bottom: "-30vh" }} position={[0, 0, 0]}>
-                    <button type="button" onClick={() => setEditAnnotation(true)} style={{ fontSize: "1.2vw" }}> Add Annotation </button>
-                    <p style={{ color: "#000000", fontSize: "1.2vw" }}> Selected Model URL: {selectedURL}</p>
-                    <h1 style={{ color: "#000000", fontSize: "1.2vw" }}>{handler}</h1>
+
+                    <p style={{ color: "#000000" }}> Selected Model URL: {selectedURL}</p>
+                    <p style={{ color: "#000000" }}>{handler}</p>
                 </Html>
             </Canvas>
         </div >

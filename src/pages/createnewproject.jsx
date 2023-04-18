@@ -82,24 +82,25 @@ export default function Page(props) {
         }
     }
     return (
-        <div>
-            <form onSubmit={onSubmit}>
-                <p>Workshop Name </p>
-                <input ref={inputName} id="name" type="text" style={{ color: '#000000' }} required />
-                <p>Workshop ID </p>
-                <input ref={inputID} id="ID" type="text" style={{ color: '#000000' }} required />
-                <p>Start Date </p>
-                <input ref={inputStartDate} id="startDate" type="date" style={{ color: '#000000' }} required />
-                <p>End Date </p>
-                <input ref={inputEndDate} id="endDate" type="date" style={{ color: '#000000' }} required />
-                <p>Number of Groups </p>
-                <input ref={inputNumGroups} id="numGroups" type="number" style={{ color: '#000000' }} required />
-                <p>Sketchfab Minecraft Map URL </p>
-                <input ref={inputBaseMap} id="baseMap" type="url" style={{ color: '#000000' }} required />
-                <br />
-                <input type="submit" value="Submit" />
-            </form>
-
+        <div style={{ overflowY: "auto", maxHeight: "100vh" }}>
+            <h1>Create a New Block By Block Workshop</h1>
+            <div style={{ padding: "20px", border: "1px solid", borderRadius: "10px", maxWidth: "600px", margin: "auto" }}>
+                <form onSubmit={onSubmit} >
+                    <p>Workshop Name </p>
+                    <input ref={inputName} id="name" type="text" style={{ color: '#000000' }} required />
+                    <p>Workshop ID </p>
+                    <input ref={inputID} id="ID" type="text" style={{ color: '#000000' }} required />
+                    <p>Start Date </p>
+                    <input ref={inputStartDate} id="startDate" type="date" style={{ color: '#000000' }} required />
+                    <p>End Date </p>
+                    <input ref={inputEndDate} id="endDate" type="date" style={{ color: '#000000' }} required />
+                    <p>Number of Groups </p>
+                    <input ref={inputNumGroups} id="numGroups" type="number" style={{ color: '#000000' }} required />
+                    <p>Sketchfab Minecraft Map URL </p>
+                    <input ref={inputBaseMap} id="baseMap" type="url" style={{ color: '#000000', minWidth: "560px" }} required />
+                    <input type="submit" value="Submit" style={{ marginTop: "20px" }} />
+                </form>
+            </div>
         </div>
     )
 }
