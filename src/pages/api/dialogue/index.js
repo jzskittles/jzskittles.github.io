@@ -38,7 +38,6 @@ export default async function handler(req, res) {
                     workshopID: req.body.workshopID,
                     groups: req.body.groups
                 }
-                console.log(req.body.baseMap, req.body.numGroups)
                 if (req.body.baseMap) {
                     newComment["groups"] = ["Base Map"]
                     for (let i = 0; i < req.body.numGroups; i++) {

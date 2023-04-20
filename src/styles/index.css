@@ -113,6 +113,10 @@
     border-color: #76BCE8;
   }
 
+  button:active {
+    background-color: #76BCE8;
+  }
+
   ::-webkit-scrollbar-corner {
     background: rgba(0, 0, 0, 0.5);
   }
@@ -142,5 +146,22 @@
     font-size: x-large;
     padding: 18px;
     font-weight: bold;
+  }
+
+  .compareBuildsForm {
+    max-width: 550px;
+    margin: auto;
+    display: flex
+  }
+
+  .selectGroup {
+    color: #000000;
+    border-radius: 5px;
+  }
+
+  .topNavBarButtons {
+    display: flex;
+    align-items: center;
+    color: #ffffff;
   }
 }

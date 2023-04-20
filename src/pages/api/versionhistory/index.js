@@ -29,7 +29,6 @@ export default async function handler(req, res) {
                 res.status(200).json(readDataJson.documents);
                 break;
             case "POST":
-                console.log("calling POST", req.body.group, req.body.url)
                 const newVersionHistory = {
                     workshopID: req.body.workshopID,
                     [req.body.group]: [req.body.url]
@@ -45,7 +44,6 @@ export default async function handler(req, res) {
                 res.status(200).json(insertDataJson);
                 break;
             case "PUT":
-                console.log("calling PUT", req.body.group, req.body.url)
                 const updateData = await fetch(`${baseUrl}/updateOne`, {
                     ...fetchOptions,
                     body: JSON.stringify({

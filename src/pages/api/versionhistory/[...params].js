@@ -21,7 +21,6 @@ export default async function handler(req, res) {
             case "GET":
                 const params = req.query.params
 
-                console.log("params", params)
                 const readData = await fetch(`${baseUrl}/find`, {
                     ...fetchOptions,
                     body: JSON.stringify({
@@ -33,7 +32,6 @@ export default async function handler(req, res) {
                     }),
                 });
                 const readDataJson = await readData.json();
-                console.log("new api versionhistory route", readDataJson.documents)
                 res.status(200).json(readDataJson.documents);
                 break;
         }

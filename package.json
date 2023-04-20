@@ -33,6 +33,7 @@
     "react-burger-menu": "^3.0.9",
     "react-dat-gui": "^4.1.1",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
     "react-tabs": "^6.0.0",
     "react-use-refs": "^1.0.1",
     "three": "^0.149.0",
