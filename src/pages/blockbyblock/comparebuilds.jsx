@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect, Suspense } from 'react'
 import { Canvas, extend, useThree, useLoader } from '@react-three/fiber'
-import { View, OrbitControls, ambientLight, pointLight, PerspectiveCamera, Html, Environment, BakeShadows } from '@react-three/drei'
+import { View, OrbitControls, ambientLight, pointLight, PerspectiveCamera, Html, useProgress } from '@react-three/drei'
 import useRefs from 'react-use-refs';
 import useSyncedCamera from '@/components/dom/useSyncedCamera';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -65,22 +65,20 @@ export default function CompareBuilds({ workshop, fetchWorkshops, numberOfGroups
         <div ref={ref} className="comparecanvas">
             <div ref={view1} style={{ position: 'relative', overflow: 'hidden' }} />
             <div ref={view2} style={{ position: 'relative', overflow: 'hidden' }} />
-            <Canvas eventSource={ref} className="canvas" id="canvas" shadows>
+            <Canvas eventSource={ref} className="canvas" id="canvas" >
                 <View index={1} track={view1} >
                     <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[0, 3, 5]} near={0.01} />
                     <ambientLight intensity={0.5} />
-                    <pointLight castShadow position={[-20, 20, -20]} intensity={1.5} shadow-mapSize={[2048, 2048]} />
-                    {modelLURL != "" && <CompareModel url={modelLURL} synced={syncCameras} />}
-                    <Environment preset={'park'} />
+                    <pointLight position={[-20, 20, -20]} intensity={1.5} />
+                    <Suspense fallback={<Loader />}>{modelLURL != "" && <CompareModel url={modelLURL} synced={syncCameras} />} </Suspense>
                 </View>
                 <View index={2} track={view2}>
                     <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[0, 3, 5]} near={0.01} />
                     <ambientLight intensity={0.5} />
-                    <pointLight castShadow position={[-20, 20, -20]} intensity={1.5} shadow-mapSize={[2048, 2048]} />
-                    {modelRURL != "" && <CompareModel url={modelRURL} synced={syncCameras} />}
-                    <Environment preset={'park'} />
+                    <pointLight position={[-20, 20, -20]} intensity={1.5} />
+                    <Suspense fallback={<Loader />}>{modelRURL != "" && <CompareModel url={modelRURL} synced={syncCameras} />}</Suspense>
                 </View>
             </Canvas>
         </div>
@@ -96,9 +94,13 @@ function CompareModel({ url, synced }) {
 
     const { scene, nodes } = useLoader(GLTFLoader, url)
 
-    useLayoutEffect(() => scene.traverse(o => (o.castShadow = o.receiveShadow = true)), [])
     return (<>
         <primitive object={scene} />
         {orbitControls}
     </>)
+}
+
+function Loader() {
+    const { progress } = useProgress()
+    return <Html center>{progress} % loaded</Html>
 }
