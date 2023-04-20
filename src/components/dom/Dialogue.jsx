@@ -58,9 +58,10 @@ export function Comment({ i, name, description, datetime, deleteComment }) {
     )
 }
 
-export function AnnotationContext({ i, editing, title, description, updateAnnotation, deleteAnnotation }) {
+export function AnnotationContext({ i, editing, group, title, description, updateAnnotation, deleteAnnotation }) {
     const [isEditing, setIsEditing] = useState(editing)
     const [annotationTitle, setAnnotationTitle] = useState(title)
+    const [annotationGroup, setAnnotationGroup] = useState(group)
     const [annotationDescription, setAnnotationDescription] = useState(description)
 
     let annotationContext
@@ -86,10 +87,17 @@ export function AnnotationContext({ i, editing, title, description, updateAnnota
                         setAnnotationDescription(e.target.value)
                     }}
                     type="text" style={{ color: "#000000", border: "2px solid #ccc", borderRadius: "5px", minWidth: "15em" }} />
+                <p>Group (optional)</p>
+                <input label="group" defaultValue={annotationGroup}
+                    onChange={(e) => {
+                        e.preventDefault()
+                        setAnnotationGroup(e.target.value)
+                    }}
+                    type="text" style={{ color: "#000000", border: "2px solid #ccc", borderRadius: "5px", minWidth: "15em" }} />
                 <button onClick={(e) => {
                     e.preventDefault()
                     setIsEditing(false)
-                    updateAnnotation(annotationTitle, annotationDescription, i)
+                    updateAnnotation(annotationTitle, annotationDescription, annotationGroup, i)
                 }}>Save</button>
                 <p style={{ paddingTop: "10px" }}>Comments</p>
             </div>
@@ -102,6 +110,9 @@ export function AnnotationContext({ i, editing, title, description, updateAnnota
         if (description != annotationDescription) {
             setAnnotationDescription(description)
         }
+        if (group != annotationGroup) {
+            setAnnotationGroup(group)
+        }
         annotationContext = (
             <div>
                 <p className='alignleft' style={{ fontSize: "1.3em" }}>Annotation {i != -1 && i + 1}</p>
@@ -109,8 +120,9 @@ export function AnnotationContext({ i, editing, title, description, updateAnnota
                 <br />
                 <br />
                 <button onClick={() => setIsEditing(true)} className='alignright'>Edit</button>
-                <p>{title}</p>
-                <p>{description}</p>
+                <p>{annotationTitle}</p>
+                <p>{annotationDescription}</p>
+                <p>{annotationGroup}</p>
                 <p style={{ paddingTop: "10px" }}>Comments</p>
             </div>
         )

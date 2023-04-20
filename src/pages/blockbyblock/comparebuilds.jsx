@@ -71,14 +71,14 @@ export default function CompareBuilds({ workshop, fetchWorkshops, numberOfGroups
                     <PerspectiveCamera makeDefault position={[0, 3, 5]} near={0.01} />
                     <ambientLight intensity={0.5} />
                     <pointLight position={[-20, 20, -20]} intensity={1.5} />
-                    <Suspense fallback={<Loader />}>{modelLURL != "" && <CompareModel url={modelLURL} synced={syncCameras} />} </Suspense>
+                    {modelLURL != "" && <CompareModel url={modelLURL} synced={syncCameras} />}
                 </View>
                 <View index={2} track={view2}>
                     <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[0, 3, 5]} near={0.01} />
                     <ambientLight intensity={0.5} />
                     <pointLight position={[-20, 20, -20]} intensity={1.5} />
-                    <Suspense fallback={<Loader />}>{modelRURL != "" && <CompareModel url={modelRURL} synced={syncCameras} />}</Suspense>
+                    {modelRURL != "" && <CompareModel url={modelRURL} synced={syncCameras} />}
                 </View>
             </Canvas>
         </div>
@@ -98,9 +98,4 @@ function CompareModel({ url, synced }) {
         <primitive object={scene} />
         {orbitControls}
     </>)
-}
-
-function Loader() {
-    const { progress } = useProgress()
-    return <Html center>{progress} % loaded</Html>
 }

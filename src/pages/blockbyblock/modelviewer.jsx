@@ -118,9 +118,7 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
                     workshopID: workshopID,
                     versionIndex: selectedVersion,
                     groups: [group],
-                    baseMap: selectedURL === versionURLs[0][group][0],
-                    annotations: annotations,
-                    numGroups: numberOfGroups
+                    groupOwner: ""
                 })
             })
 
@@ -132,7 +130,7 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
         }
     }
 
-    async function updateAnnotation(title, description, i) {
+    async function updateAnnotation(title, description, groupOwner, i) {
         try {
             const response = await fetch('/api/annotations', {
                 method: 'PUT',
@@ -142,9 +140,12 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
                 body: JSON.stringify({
                     title: title,
                     description: description,
+                    groupOwner: groupOwner,
+                    group: group,
                     url: selectedURL,
                     camPos: { x: 0, y: 0, z: 0 },
                     lookAt: { x: annotations[i].lookAt.x, y: annotations[i].lookAt.y, z: annotations[i].lookAt.z },
+                    baseMap: selectedURL === versionURLs[0][group][0],
                     _id: annotations[i]._id.toString()
                 })
             })
@@ -190,7 +191,7 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
             e.stopPropagation()
             setEditAnnotation(false)
 
-            postAnnotation("title" + (annotations.length + 1), "description", e.point.x, e.point.y, e.point.z)
+            postAnnotation("title" + (annotations.length + 1), "", e.point.x, e.point.y, e.point.z)
         }
     }
 
@@ -395,7 +396,7 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
                     <div>Select an Annotation to view dialogue!</div>
                 ) : (
                     <>
-                        <AnnotationContext i={selectedAnnotation} editing={selectedAnnotation === annotations.length} title={annotations[selectedAnnotation]?.title} description={annotations[selectedAnnotation]?.description} updateAnnotation={updateAnnotation} deleteAnnotation={deleteAnnotation} />
+                        <AnnotationContext i={selectedAnnotation} editing={selectedAnnotation === annotations.length} group={annotations[selectedAnnotation]?.groupOwner} title={annotations[selectedAnnotation]?.title} description={annotations[selectedAnnotation]?.description} updateAnnotation={updateAnnotation} deleteAnnotation={deleteAnnotation} />
                         {dialogue.map((comment, i) => {
                             if (Object.hasOwn(comment, "annotationID") && selectedAnnotation < annotations.length && comment.annotationID === annotations[selectedAnnotation]._id.toString()) {
                                 return (<Comment i={i} key={i} name={comment.name} description={comment.description} datetime={comment.datetime} deleteComment={deleteComment} />)
@@ -425,7 +426,7 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
                     <ambientLight intensity={0.5} />
                     <spotLight castShadow intensity={1} angle={0.1} position={[-20, 20, -20]} shadow-mapSize={[2048, 2048]} shadow-bias={-0.000001} />
 
-                    <Suspense fallback={<Loader />}>{selectedVersion != -1 && <Model url={selectedURL} clickedMesh={clickedMesh} />}</Suspense>
+                    {selectedVersion != -1 && <Model url={selectedURL} clickedMesh={clickedMesh} />}
 
                     <>{annotations.map((a, i) => {
                         return (
@@ -452,9 +453,4 @@ function Model({ url, clickedMesh }) {
             <OrbitControls makeDefault maxPolarAngle={Math.PI / 2} />
         </>
     )
-}
-
-function Loader() {
-    const { progress } = useProgress()
-    return <Html center>{progress} % loaded</Html>
 }

@@ -99,6 +99,7 @@ export default function Page(props) {
                     <p>Sketchfab Minecraft Map URL </p>
                     <input ref={inputBaseMap} id="baseMap" type="url" style={{ color: '#000000', minWidth: "560px" }} required />
                     <input type="submit" value="Submit" style={{ marginTop: "20px" }} />
+                    <button value="Cancel" style={{ marginLeft: "10px" }} onClick={() => router.push("/blockbyblock")}> Cancel </button>
                 </form>
             </div>
         </div>

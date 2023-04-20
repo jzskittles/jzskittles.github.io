@@ -62,7 +62,7 @@ export function VersionHistory({ i, selected, setSelected, deleteVersion }) {
             }}>Delete</button>}
         </div>
     )
-    let fillColor = "#76BCE8"
+    let fillColor = "rgba(0, 0, 0, .66)"
     if (selected == i) {
         fillColor = "#9BBE49"
     }

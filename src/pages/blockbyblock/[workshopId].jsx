@@ -45,7 +45,7 @@ function Workshop() {
                                 onClick={() => setViewerMode("CompareBuilds")}>
                                 <FaExchangeAlt style={{ marginRight: "5px" }} /> Compare Builds </button>
                             <button type="button" className='topNavBarButtons'
-                                style={{ marginLeft: "20px", backgroundColor: editAnnotations ? "#76BCE8" : "#000000", display: viewerMode === "CompareBuilds" ? "none" : "inherit" }}
+                                style={{ marginLeft: "20px", backgroundColor: editAnnotations ? "#0147AB" : "#000000", display: viewerMode === "CompareBuilds" ? "none" : "inherit" }}
                                 onClick={() => setEditAnnotation(!editAnnotations)}>
                                 <FaEdit style={{ marginRight: "5px" }} /> Add Annotation </button>
                         </form>

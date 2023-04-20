@@ -37,14 +37,15 @@ export default async function handler(req, res) {
                     url: req.body.url,
                     workshopID: req.body.workshopID,
                     versionIndex: req.body.versionIndex.toString(),
-                    groups: req.body.groups
+                    groups: req.body.groups,
+                    groupOwner: req.body.groupOwner
                 }
-                if (req.body.baseMap) {
+                /*if (req.body.baseMap) {
                     newAnnotation["groups"] = ["Base Map"]
                     for (let i = 0; i < req.body.numGroups; i++) {
                         newAnnotation["groups"].push("Group " + (i + 1))
                     }
-                }
+                }*/
                 const insertData = await fetch(`${baseUrl}/insertOne`, {
                     ...fetchOptions,
                     body: JSON.stringify({
@@ -56,6 +57,12 @@ export default async function handler(req, res) {
                 res.status(200).json(insertDataJson);
                 break;
             case "PUT":
+                let newGroups
+                if (req.body.baseMap) {
+                    newGroups = ["Base Map", req.body.groupOwner]
+                } else {
+                    newGroups = [req.body.group]
+                }
                 const updateData = await fetch(`${baseUrl}/updateOne`, {
                     ...fetchOptions,
                     body: JSON.stringify({
@@ -64,7 +71,9 @@ export default async function handler(req, res) {
                         update: {
                             $set: {
                                 title: req.body.title,
-                                description: req.body.description
+                                description: req.body.description,
+                                groupOwner: req.body.groupOwner,
+                                groups: newGroups
                             }
                         }
                     }),

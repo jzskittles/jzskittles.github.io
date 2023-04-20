@@ -7,7 +7,7 @@ export function Annotations({ title, description, x, y, z, i, selected, setSelec
     const [annotationTitle, setAnnotationTitle] = useState(title)
     const [annotationDescription, setAnnotationDescription] = useState(description)
 
-    let newAnnotation
+    /*let newAnnotation
     if (isEditing) {
         newAnnotation = (
             <div>
@@ -34,7 +34,7 @@ export function Annotations({ title, description, x, y, z, i, selected, setSelec
             </div>
         )
 
-    } /*else {
+    } else {
         newAnnotation = (
             <div>
                 <button onClick={() => setIsEditing(true)}>Edit</button>
@@ -43,7 +43,7 @@ export function Annotations({ title, description, x, y, z, i, selected, setSelec
         )
     }*/
 
-    let fillColor = "#76BCE8"
+    let fillColor = "#0147AB"
     if (selected == i) {
         fillColor = "#9BBE49"
     }
@@ -68,9 +68,6 @@ export function Annotations({ title, description, x, y, z, i, selected, setSelec
                         {i + 1}
                     </text>
                 </svg>
-                {selected === i && (
-                    newAnnotation
-                )}
             </Html>
         </group>
     )
