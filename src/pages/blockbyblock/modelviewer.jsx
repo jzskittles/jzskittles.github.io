@@ -8,7 +8,8 @@ import { push as Menu } from 'react-burger-menu'
 import useRefs from 'react-use-refs';
 import { Annotations } from "@/components/dom/Annotations"
 
-export default function ModelViewer({ url, workshopID, group, numberOfGroups, editAnnotations, setEditAnnotation, annotations, setAnnotations }) {
+export default function ModelViewer({ url, workshopID, group, numberOfGroups, editAnnotations, setEditAnnotation }) {
+    const [annotations, setAnnotations] = useState([])
     const [selectedAnnotation, setSelectedAnnotation] = useState(-1)
 
     const [versionURLs, setVersionURLs] = useState([])

@@ -5,11 +5,10 @@ import useRefs from 'react-use-refs';
 import useSyncedCamera from '@/components/dom/useSyncedCamera';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-export default function CompareBuilds({ workshop, fetchWorkshops }) {
+export default function CompareBuilds({ workshop, fetchWorkshops, numberOfGroups }) {
     useEffect(() => {
         fetchWorkshops()
     }, [])
-    const numberOfGroups = parseInt(workshop.numGroups)
     const [ref, view1, view2] = useRefs()
 
     const [compareGroupL, setCompareGroupL] = useState("")

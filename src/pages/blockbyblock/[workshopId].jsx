@@ -13,7 +13,6 @@ function Workshop() {
     const [workshops, setWorkshops] = useState([])
     const [viewerMode, setViewerMode] = useState("ModelViewer")
 
-    const [annotations, setAnnotations] = useState([])
     const [editAnnotations, setEditAnnotation] = useState(false)
 
     const fetchWorkshops = async () => {
@@ -59,9 +58,7 @@ function Workshop() {
                                         group={"Base Map"}
                                         numberOfGroups={numberOfGroups}
                                         editAnnotations={editAnnotations}
-                                        setEditAnnotation={setEditAnnotation}
-                                        annotations={annotations}
-                                        setAnnotations={setAnnotations} />
+                                        setEditAnnotation={setEditAnnotation} />
                                 </TabPanel>
                                 <>{[...Array(numberOfGroups)].map((x, i) => {
                                     const groupName = "Group " + (i + 1)
@@ -73,9 +70,7 @@ function Workshop() {
                                                 group={groupName}
                                                 numberOfGroups={numberOfGroups}
                                                 editAnnotations={editAnnotations}
-                                                setEditAnnotation={setEditAnnotation}
-                                                annotations={annotations}
-                                                setAnnotations={setAnnotations} />
+                                                setEditAnnotation={setEditAnnotation} />
                                         </TabPanel>
                                     )
                                 })}</>
@@ -96,8 +91,7 @@ function Workshop() {
                                 <CompareBuilds
                                     workshop={workshop}
                                     fetchWorkshops={fetchWorkshops}
-                                    annotations={annotations}
-                                    setAnnotations={setAnnotations} />
+                                    numberOfGroups={numberOfGroups} />
                             </div>
                         )}
 
