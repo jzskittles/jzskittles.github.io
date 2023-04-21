@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gaza Participant Model 9
+* source:	https://sketchfab.com/3d-models/gaza-participant-model-9-3e3fbf54da694d3faa1f975201e03ff2
+* author:	Block by Block (https://sketchfab.com/blockbyblock)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gaza Participant Model 9" (https://sketchfab.com/3d-models/gaza-participant-model-9-3e3fbf54da694d3faa1f975201e03ff2) by Block by Block (https://sketchfab.com/blockbyblock) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
