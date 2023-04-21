@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gaza 8
+* source:	https://sketchfab.com/3d-models/gaza-8-f901e2e17f3148ddb4faecae40be4e42
+* author:	jennyzhang1235 (https://sketchfab.com/jennyzhang1235)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gaza 8" (https://sketchfab.com/3d-models/gaza-8-f901e2e17f3148ddb4faecae40be4e42) by jennyzhang1235 (https://sketchfab.com/jennyzhang1235) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

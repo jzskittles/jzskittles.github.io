@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gaza Base Model
+* source:	https://sketchfab.com/3d-models/gaza-base-model-14e37b4b2b6943198bd5cbc14431d6c2
+* author:	jennyzhang1235 (https://sketchfab.com/jennyzhang1235)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gaza Base Model" (https://sketchfab.com/3d-models/gaza-base-model-14e37b4b2b6943198bd5cbc14431d6c2) by jennyzhang1235 (https://sketchfab.com/jennyzhang1235) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
