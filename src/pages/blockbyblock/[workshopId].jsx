@@ -14,6 +14,7 @@ function Workshop() {
     const [viewerMode, setViewerMode] = useState("ModelViewer")
 
     const [editAnnotations, setEditAnnotation] = useState(false)
+    const [modelScale, setModelScale] = useState(1)
 
     const fetchWorkshops = async () => {
         const response = await fetch('/api/workshops')
@@ -58,7 +59,9 @@ function Workshop() {
                                         group={"Base Map"}
                                         numberOfGroups={numberOfGroups}
                                         editAnnotations={editAnnotations}
-                                        setEditAnnotation={setEditAnnotation} />
+                                        setEditAnnotation={setEditAnnotation}
+                                        modelScale={modelScale}
+                                        setModelScale={setModelScale} />
                                 </TabPanel>
                                 <>{[...Array(numberOfGroups)].map((x, i) => {
                                     const groupName = "Group " + (i + 1)
@@ -70,7 +73,9 @@ function Workshop() {
                                                 group={groupName}
                                                 numberOfGroups={numberOfGroups}
                                                 editAnnotations={editAnnotations}
-                                                setEditAnnotation={setEditAnnotation} />
+                                                setEditAnnotation={setEditAnnotation}
+                                                modelScale={modelScale}
+                                                setModelScale={setModelScale} />
                                         </TabPanel>
                                     )
                                 })}</>

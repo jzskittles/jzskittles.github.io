@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, Suspense } from 'react'
-import { View, OrbitControls, ambientLight, pointLight, spotLight, PerspectiveCamera, Html, Environment, useProgress } from '@react-three/drei'
+import { View, OrbitControls, ambientLight, pointLight, spotLight, PerspectiveCamera, Html, Environment, AdaptiveDpr, Bounds, useBounds, useProgress, ContactShadows } from '@react-three/drei'
 import { Canvas, extend, useThree, useLoader, applyProps, useFrame } from '@react-three/fiber'
 import { NewVersion, VersionHistory } from "@/components/dom/VersionHistory"
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -7,8 +7,9 @@ import { NewComment, Comment, AnnotationContext } from '@/components/dom/Dialogu
 import { push as Menu } from 'react-burger-menu'
 import useRefs from 'react-use-refs';
 import { Annotations } from "@/components/dom/Annotations"
+import { Box3, DoubleSide, FrontSide, LinearMipMapLinearFilter, NearestFilter, Vector3 } from 'three'
 
-export default function ModelViewer({ url, workshopID, group, numberOfGroups, editAnnotations, setEditAnnotation }) {
+export default function ModelViewer({ url, workshopID, group, numberOfGroups, editAnnotations, setEditAnnotation, modelScale, setModelScale }) {
     const [annotations, setAnnotations] = useState([])
     const [selectedAnnotation, setSelectedAnnotation] = useState(-1)
 
@@ -406,7 +407,7 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
                     </>
                 )}
             </Menu>
-            <Canvas eventSource={ref} className="canvas" id="canvas" shadows>
+            <Canvas eventSource={ref} className="canvas" id="canvas" shadows >
 
                 <>{
                     versionURLs.length > 0 && Object.hasOwn(versionURLs[0], group) && versionURLs[0][group].map((url, i) => {
@@ -422,17 +423,18 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
                 }</>
                 <View index={1} track={view1} >
                     <color attach="background" args={['#76BCE8']} />
-                    <PerspectiveCamera makeDefault position={[-3, 3, 5]} near={0.01} />
+                    <PerspectiveCamera makeDefault position={[0.3 * modelScale, 0.5 * modelScale, -0.8 * modelScale]} near={0.01} />
                     <ambientLight intensity={0.5} />
-                    <spotLight castShadow intensity={1} angle={0.1} position={[-20, 20, -20]} shadow-mapSize={[2048, 2048]} shadow-bias={-0.000001} />
+                    <spotLight castShadow intensity={1} angle={0.1} position={[-20, 200, -20]} shadow-mapSize={[2048, 2048]} shadow-bias={-0.000001} />
 
-                    {selectedVersion != -1 && <Model url={selectedURL} clickedMesh={clickedMesh} />}
-
+                    {selectedVersion != -1 && <Model url={selectedURL} clickedMesh={clickedMesh} setModelScale={setModelScale} />}
                     <>{annotations.map((a, i) => {
                         return (
                             <Annotations key={i} title={a.title} description={a.description} x={a.lookAt.x} y={a.lookAt.y} z={a.lookAt.z} i={i} selected={selectedAnnotation} setSelected={setSelectedAnnotation} updateAnnotation={updateAnnotation} deleteAnnotation={deleteAnnotation} />
                         )
                     })}</>
+                    <AdaptiveDpr pixelated />
+
                     <Environment preset={'park'} />
                 </View>
                 <Html style={{ left: "-45vw", bottom: "-30vh" }} position={[0, 0, 0]}>
@@ -444,9 +446,23 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
 }
 
 
-function Model({ url, clickedMesh }) {
+function Model({ url, clickedMesh, setModelScale }) {
     const { scene, nodes } = useLoader(GLTFLoader, url)
-    useLayoutEffect(() => scene.traverse(o => (o.castShadow = o.receiveShadow = true)), [])
+    useLayoutEffect(() => scene.traverse(o => {
+        o.castShadow = o.receiveShadow = true
+        if (o.material) {
+            o.material.map.minFilter = LinearMipMapLinearFilter
+            o.material.anisotropy = 16
+        }
+
+    }), [])
+    useEffect(() => {
+        const bbox = new Box3().setFromObject(scene)
+        const bboxSize = new Vector3(bbox)
+        const bounds = bbox.getSize(bboxSize)
+        setModelScale(Math.max(Math.max(bounds.x, bounds.y), bounds.z))
+    }, [])
+
     return (
         <>
             <primitive object={scene} onClick={clickedMesh} />
