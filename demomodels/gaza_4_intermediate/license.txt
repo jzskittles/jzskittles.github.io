@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gaza 4 Intermediate
+* source:	https://sketchfab.com/3d-models/gaza-4-intermediate-01a411cb89214f16b1404f78d2c5381d
+* author:	jennyzhang1235 (https://sketchfab.com/jennyzhang1235)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gaza 4 Intermediate" (https://sketchfab.com/3d-models/gaza-4-intermediate-01a411cb89214f16b1404f78d2c5381d) by jennyzhang1235 (https://sketchfab.com/jennyzhang1235) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
