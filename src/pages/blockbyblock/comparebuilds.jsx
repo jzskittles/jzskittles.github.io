@@ -5,7 +5,9 @@ import useRefs from 'react-use-refs';
 import useSyncedCamera from '@/components/dom/useSyncedCamera';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { LinearMipMapLinearFilter, Vector3 } from 'three'
+import { suspend } from 'suspend-react'
 
+const city = import('@pmndrs/assets/hdri/apartment.exr').then((module) => module.default)
 export default function CompareBuilds({ workshop, fetchWorkshops, numberOfGroups }) {
     useEffect(() => {
         fetchWorkshops()
@@ -70,16 +72,16 @@ export default function CompareBuilds({ workshop, fetchWorkshops, numberOfGroups
                 <View index={1} track={view1} >
                     <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[0, 3, 5]} near={0.01} />
-                    <ambientLight intensity={0.5} />
-                    <pointLight position={[-20, 20, -20]} intensity={1.5} />
+                    <ambientLight intensity={1.5} />
+                    <pointLight position={[-20, 20, -20]} intensity={4} />
                     <AdaptiveDpr pixelated />
                     {modelLURL != "" && <CompareModel url={modelLURL} synced={syncCameras} />}
                 </View>
                 <View index={2} track={view2}>
                     <color attach="background" args={['#76BCE8']} />
                     <PerspectiveCamera makeDefault position={[0, 3, 5]} near={0.01} />
-                    <ambientLight intensity={0.5} />
-                    <pointLight position={[-20, 20, -20]} intensity={1.5} />
+                    <ambientLight intensity={1.5} />
+                    <pointLight position={[-20, 20, -20]} intensity={4} />
                     <AdaptiveDpr pixelated />
                     {modelRURL != "" && <CompareModel url={modelRURL} synced={syncCameras} />}
                 </View>
