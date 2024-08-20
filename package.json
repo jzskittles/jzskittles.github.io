@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@pmndrs/assets": "^1.6.0",
-    "@react-three/drei": "^9.56.5",
+    "@react-three/drei": "^9.70.4",
     "@react-three/fiber": "^8.10.1",
     "dat.gui": "^0.7.9",
     "eventemitter3": "^5.0.0",

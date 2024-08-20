@@ -8,9 +8,7 @@ import { push as Menu } from 'react-burger-menu'
 import useRefs from 'react-use-refs';
 import { Annotations } from "@/components/dom/Annotations"
 import { Box3, DoubleSide, FrontSide, LinearMipMapLinearFilter, NearestFilter, Vector3 } from 'three'
-import { suspend } from 'suspend-react'
-
-const city = import('@pmndrs/assets/hdri/apartment.exr').then((module) => module.default)
+import path from 'path';
 
 export default function ModelViewer({ url, workshopID, group, numberOfGroups, editAnnotations, setEditAnnotation, modelScale, setModelScale }) {
     const [annotations, setAnnotations] = useState([])
@@ -438,7 +436,7 @@ export default function ModelViewer({ url, workshopID, group, numberOfGroups, ed
                     })}</>
                     <AdaptiveDpr pixelated />
 
-                    <Environment files={suspend(city)} />
+                    <Environment files={path.join('..', 'img', 'rooitou_park_4k.hdr')} />
                 </View>
                 <Html style={{ left: "-45vw", bottom: "-30vh" }} position={[0, 0, 0]}>
                     <p style={{ color: "#000000" }}>{handler}</p>
